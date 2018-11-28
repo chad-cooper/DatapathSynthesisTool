@@ -8,15 +8,6 @@
 
 #include "DCS.hpp"
 
-Reg* getRegByName(vector<Reg>& r, string& s){
-    for(auto it = r.begin(); it != r.end(); it++){
-        if (it->name == s){
-            return &(*it);
-        }
-    }
-    return nullptr;
-}
-
 //MARK: Build compatibility graph from AUDI file
 CompatibilityGraph<Op, Reg> readAUDI(string audi, bool print){
     
@@ -60,7 +51,7 @@ CompatibilityGraph<Op, Reg> readAUDI(string audi, bool print){
     iss >> discard; // throw away 'regs'
     
     while (iss >> reg_name >> width) {
-        comp.E.emplace_back(reg_name, Reg::intermediate, width, true);
+        comp.E.emplace_back(reg_name, Reg::intermediate, width, false);
     }
     
     getline(audiFile, line);
@@ -111,11 +102,46 @@ CompatibilityGraph<Op, Reg> readAUDI(string audi, bool print){
 }
 
 //MARK: LIST_L implementation
-vector<int> LIST_L(CompatibilityGraph<Op, Reg>&, array<int, 4>&){
+vector<int> LIST_L(CompatibilityGraph<Op, Reg>& G, array<int, 4>& a){
     
+    vector<int> t(G.V.size(), -1);
     
-    vector<int> phv(0);
-    return phv;
+    // l is timestep
+    int l = 1;
+    
+    do {
+        for(int op = 0; op < G.V.size(); op++){
+            
+            // An operation is ready to begin when it has valid data on its
+            // input registers and enough available resources.
+            if (G.V[op].canStart(a) && t[op] == -1){
+                
+                // Schedule an operations start time
+                t[op] = l;
+                
+                // Reduce the number of available resources
+                a[G.V[op].type]--;
+            }
+            
+            // If the current time step is later than op's start time + delay,
+            // then it is finished and its resources can be released.
+            if(t[op] != -1 && l >= G.V[op].delay + t[op]){
+                G.V[op].finished();
+                a[G.V[op].type]++;
+            }
+            
+        }
+        
+        // Increment time step
+        l += 1;
+        
+//        cout << "l: " << l << ", t: ";
+//        for (auto ts : t){cout << ts << " ";}
+//        cout << endl;
+        
+    } while (find(t.begin(), t.end(), -1) != t.end() ); // While an operation is unscheduled
+    
+    return t;
 }
 
 
@@ -133,4 +159,20 @@ ostream& operator<<(ostream& os, const Op& op)
     << "Input registers: " << op.input_reg[0]->name << ", " << op.input_reg[1]->name << endl
     << "Output register: " << op.output_reg->name;
     return os;
+}
+
+//MARK: Aux and helper functions
+Reg* getRegByName(vector<Reg>& r, string& s){
+    for(auto it = r.begin(); it != r.end(); it++){
+        if (it->name == s){
+            return &(*it);
+        }
+    }
+    return nullptr;
+}
+
+void assignStartTimes(CompatibilityGraph<Op, Reg>& G, vector<int>& t){
+    for(int i = 0; i < G.V.size(); i++){
+        G.V[i].start_time = t[i];
+    }
 }

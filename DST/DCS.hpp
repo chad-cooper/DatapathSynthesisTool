@@ -16,6 +16,7 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include <algorithm>
 
 using namespace std;
 
@@ -70,8 +71,10 @@ public:
     array<Reg*, 2> input_reg;
     Reg* output_reg;
     
-    bool canStart() {return input_reg[0]->dataValid && input_reg[1]->dataValid;}
+    bool isReady() {return input_reg[0]->dataValid && input_reg[1]->dataValid;}
+    bool canStart(array<int, 4>& resources) {return isReady() && resources[type] > 0;}
     
+    void finished() {output_reg->dataValid = true;}
     
     
     
@@ -105,6 +108,7 @@ CompatibilityGraph<Op, Reg> readAUDI(string, bool);
 
 vector<int> LIST_L(CompatibilityGraph<Op, Reg>&, array<int, 4>&);
 
+void assignStartTimes(CompatibilityGraph<Op, Reg>&, vector<int>&);
 
 
 #endif /* DCS_hpp */
