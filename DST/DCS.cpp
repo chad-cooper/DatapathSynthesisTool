@@ -80,8 +80,8 @@ CompatibilityGraph<Op, Reg> readAUDI(string audi, bool print){
                     break;
             }
             
-            array<Reg*, 2> inputs = {getRegByName(comp.E, in1), getRegByName(comp.E, in2)};
-            Reg* output = getRegByName(comp.E, out);
+            array<Reg*, 2> inputs = {getXByName<Reg>(comp.E, in1), getXByName<Reg>(comp.E, in2)};
+            Reg* output = getXByName<Reg>(comp.E, out);
             
             comp.V.emplace_back(op_name, op_type, width, inputs, output);
         }
@@ -169,8 +169,9 @@ ostream& operator<<(ostream& os, const Op& op)
 }
 
 //MARK: Aux and helper functions
-Reg* getRegByName(vector<Reg>& r, string& s){
-    for(auto it = r.begin(); it != r.end(); it++){
+template <typename X>
+X* getXByName(vector<X>& x, string& s){
+    for(auto it = x.begin(); it != x.end(); it++){
         if (it->name == s){
             return &(*it);
         }

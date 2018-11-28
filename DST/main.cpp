@@ -10,20 +10,14 @@
 
 int main(int argc, const char * argv[]) {
     
-    CompatibilityGraph<Op, Reg> comp = readAUDI("lattice.aif", true);
+    bool print = true;
     
-    cout << "\nPrinting vertices...\n" <<  endl;
+    CompatibilityGraph<Op, Reg> comp = readAUDI("toyexample.aif", print);
     
-    comp.printVertices();
+    array<int, 4> num_resources = {1, 1, 1, 1};
     
-    cout << "\nPrinting edges...\n" << endl;
-    
-    comp.printEdges();
-    
-    array<int, 4> num_resources;
-    
-    cout << "Enter the number of available resources in the order of [ADD SUB MULT DIV]:\n";
-    cin >> num_resources[0] >> num_resources[1] >> num_resources[2] >> num_resources[3];
+//    cout << "Enter the number of available resources in the order of [ADD SUB MULT DIV]:\n";
+//    cin >> num_resources[0] >> num_resources[1] >> num_resources[2] >> num_resources[3];
     
     vector<int> t;
     try {
@@ -33,11 +27,16 @@ int main(int argc, const char * argv[]) {
         return 1;
     }
     
-
+    cout << endl;
     for (int i = 0; i < t.size(); i++){
         cout << "Operation: " << comp.V[i].name << ", start time: " << t[i] << endl;
     }
     
+    cout << endl;
+    
+    assignStartTimes(comp, t);
+    
+    if(!print) comp.printVertices();
     
     
     

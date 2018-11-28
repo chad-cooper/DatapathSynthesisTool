@@ -102,7 +102,10 @@ public:
     void printEdges() {for(auto e: E) {cout << e << endl << endl;}}
 };
 
-Reg* getRegByName(vector<Reg>&, string&);
+
+// Return pointer to X based on X.name
+template <typename X>
+X* getXByName(vector<X>&, string&);
 
 CompatibilityGraph<Op, Reg> readAUDI(string, bool);
 
