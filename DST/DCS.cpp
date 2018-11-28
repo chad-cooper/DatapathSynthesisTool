@@ -115,7 +115,6 @@ vector<int> LIST_L(CompatibilityGraph<Op, Reg>& G, array<int, 4>& a){
         }
     }
     
-    
     vector<int> t(G.V.size(), -1);
     
     // l is timestep

@@ -36,8 +36,7 @@ int main(int argc, const char * argv[]) {
     
     assignStartTimes(comp, t);
     
-    if(!print) comp.printVertices();
-    
+    if(print) comp.printVertices();
     
     
     return 0;
