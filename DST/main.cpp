@@ -6,10 +6,19 @@
 //  Copyright © 2018 Chad Cooper. All rights reserved.
 //
 
-#include <iostream>
+#include "DCS.hpp"
 
 int main(int argc, const char * argv[]) {
-    // insert code here...
-    std::cout << "Hello, World!\n";
+    
+    CompatibilityGraph<Op, Reg> comp = readAUDI("toyexample.aif", true);
+    
+    cout << "\nPrinting vertices...\n" <<  endl;
+    
+    comp.printVertices();
+    
+    cout << "\nPrinting edges...\n" << endl;
+    
+    comp.printEdges();
+
     return 0;
 }

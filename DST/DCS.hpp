@@ -14,20 +14,21 @@
 #include <string>
 #include <array>
 #include <vector>
-#include <map>
+#include <fstream>
+#include <sstream>
 
 using namespace std;
 
 class Reg {
-    enum reg_type {input, intermediate, output}; // A register can have one of these types
-
 public:
+    enum reg_type {input, intermediate, output}; // A register can have one of these types
     
     // Constructor
-    Reg(string init_name, reg_type init_type, int init_width){
+    Reg(string init_name, reg_type init_type, int init_width, bool valid = true){
         name = init_name;
         type = init_type;
         width = init_width;
+        dataValid = valid;
     }
     
     string name; // Register name
@@ -44,27 +45,23 @@ public:
     
 };
 
-ostream& operator<<(ostream& os, const Reg& reg)
-{
-    os << "Name: " << reg.name << endl << "Type: " << reg.type;
-    return os;
-}
+ostream& operator<<(ostream& os, const Reg& reg);
 
 class Op {
+public:
     enum op_type {ADD,SUB,MULT,DIV};
     
-public:
-    
-    Op(string init_name, op_type init_type, int init_width){
+    Op(string init_name, op_type init_type, int init_width, array<Reg*, 2> ins, Reg* out){
         name = init_name;
         type = init_type;
         width = init_width;
+        input_reg = ins;
+        output_reg = out;
     }
     
     string name;
     op_type type;
     int width;
-    
     
     int start_time = -1;
     int delay = 1;
@@ -73,18 +70,16 @@ public:
     array<Reg*, 2> input_reg;
     Reg* output_reg;
     
+    bool canStart() {return input_reg[0]->dataValid && input_reg[1]->dataValid;}
+    
+    
+    
+    
     friend ostream& operator<<(ostream& os, const Op& op);
     
 };
 
-ostream& operator<<(ostream& os, const Op& op)
-{
-    os << "Name: " << op.name << endl << "Type: " << op.type
-    << endl << "Start time: " << op.start_time << endl
-    << "Input registers: " << op.input_reg[0]->name << ", " << op.input_reg[1]->name << endl
-    << "Output register: " << op.output_reg->name;
-    return os;
-}
+ostream& operator<<(ostream& os, const Op& op);
 
 
 template <class VT, class ET>
@@ -100,11 +95,15 @@ public:
     
     void buildAdjMatrix(vector<VT>&);
     
-    void printVertices();
-    void printEdges();
+    void printVertices() {for(auto v: V) {cout << v << endl << endl;}}
+    void printEdges() {for(auto e: E) {cout << e << endl << endl;}}
 };
 
+Reg* getRegByName(vector<Reg>&, string&);
 
+CompatibilityGraph<Op, Reg> readAUDI(string, bool);
+
+vector<int> LIST_L(CompatibilityGraph<Op, Reg>&, array<int, 4>&);
 
 
 
