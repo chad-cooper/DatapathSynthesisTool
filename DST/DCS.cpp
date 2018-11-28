@@ -104,6 +104,18 @@ CompatibilityGraph<Op, Reg> readAUDI(string audi, bool print){
 //MARK: LIST_L implementation
 vector<int> LIST_L(CompatibilityGraph<Op, Reg>& G, array<int, 4>& a){
     
+    // First, check if we have the necessary number of resources...
+    array<int, 4> num_needed = {0};
+    for(int op = 0; op < G.V.size(); op++){
+        num_needed[G.V[op].type]++;
+    }
+    for(int i = 0; i < a.size(); i++){
+        if(num_needed[i] != 0 && a[i] == 0){
+            throw invalid_argument("\nThere are not enough resources to schedule this graph!\n\n");
+        }
+    }
+    
+    
     vector<int> t(G.V.size(), -1);
     
     // l is timestep
@@ -129,15 +141,10 @@ vector<int> LIST_L(CompatibilityGraph<Op, Reg>& G, array<int, 4>& a){
                 G.V[op].finished();
                 a[G.V[op].type]++;
             }
-            
         }
         
         // Increment time step
         l += 1;
-        
-//        cout << "l: " << l << ", t: ";
-//        for (auto ts : t){cout << ts << " ";}
-//        cout << endl;
         
     } while (find(t.begin(), t.end(), -1) != t.end() ); // While an operation is unscheduled
     

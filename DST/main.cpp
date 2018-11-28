@@ -38,5 +38,8 @@ int main(int argc, const char * argv[]) {
         cout << "Operation: " << comp.V[i].name << ", start time: " << t[i] << endl;
     }
     
+    
+    
+    
     return 0;
 }
