@@ -7,6 +7,7 @@
 //
 
 #include "DCS.hpp"
+#include "allocate_and_bind.hpp"
 
 int main(int argc, const char * argv[]) {
     
@@ -38,6 +39,17 @@ int main(int argc, const char * argv[]) {
     
     if(print) comp.printVertices();
     
+    // Allocate and bind funcitonal units
+//    allocateAndBind(comp.V, num_resources.size());
+    
+    
+    vec_mat A;
+    
+    insertAdjMat(A, 1, 2, 1);
+    
+    printMat(A);
+    
+    cout << endl;
     
     return 0;
 }

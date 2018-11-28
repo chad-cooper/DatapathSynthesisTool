@@ -38,9 +38,27 @@ public:
     array<int, 2> lifetime = {0, 0}; // lt[0] = first time written to, lt[1] = last time read from
     int lifespan = lifetime[1] - lifetime[0];
     
+    
+    // States
     bool isWriting = false;
     bool isReading = false;
     bool dataValid = false;
+    
+    bool operator==(const Reg &other) const {
+        bool eq = true;
+        
+        eq = (name == other.name) && eq;
+        
+        eq = (type == other.type) && eq;
+        
+        eq = (width == other.width) && eq;
+        
+        eq = (lifetime[0] == other.lifetime[0] && lifetime[1] == other.lifetime[1]) && eq;
+        
+        eq = (lifetime == other.lifetime) && eq;
+        
+        return eq;
+    }
     
     friend ostream& operator<<(ostream& os, const Reg& reg);
     
@@ -76,7 +94,27 @@ public:
     
     void finished() {output_reg->dataValid = true;}
     
-    
+    bool operator==(const Op &other) const {
+        // Compare the values, and return the result.
+        bool eq = true;
+        
+        eq = (name == other.name) && eq;
+        
+        eq = (type == other.type) && eq;
+        
+        eq = (width == other.width) && eq;
+        
+        eq = (start_time == other.start_time) && eq;
+        
+        eq = (delay == other.delay) && eq;
+        
+        eq = (input_reg[0] == other.input_reg[0] && input_reg[1] == other.input_reg[1]) && eq;
+        
+        eq = (output_reg == other.output_reg) && eq;
+        
+        return eq;
+        
+    }
     
     friend ostream& operator<<(ostream& os, const Op& op);
     
