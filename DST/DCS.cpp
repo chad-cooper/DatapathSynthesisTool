@@ -170,7 +170,9 @@ void assignLifetime(CompatibilityGraph<Op, Reg>& G){
         op->output_reg->lifetime[0] = op->start_time;
         
         for(auto input = op->input_reg.begin(); input != op->input_reg.end(); input ++){
-            (*input)->lifetime[1] = op->start_time;
+            if ((*input)->type != Reg::output){
+                (*input)->lifetime[1] = op->start_time;
+            }
         }
         
         if (op->output_reg->type == Reg::output){

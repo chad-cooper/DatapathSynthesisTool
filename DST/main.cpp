@@ -13,7 +13,7 @@ int main(int argc, const char * argv[]) {
     
     bool print = true;
     
-    CompatibilityGraph<Op, Reg> comp = readAUDI("lattice.aif", print);
+    CompatibilityGraph<Op, Reg> comp = readAUDI("toyexample.aif", print);
     
     array<int, 4> num_resources = {2, 2, 2, 2};
     
