@@ -8,7 +8,6 @@
 
 #include "DCS.hpp"
 #include "allocate_and_bind.hpp"
-#include "clique_partition.h"
 
 int main(int argc, const char * argv[]) {
     
