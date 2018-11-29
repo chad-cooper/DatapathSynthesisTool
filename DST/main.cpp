@@ -41,14 +41,19 @@ int main(int argc, const char * argv[]) {
     
     // Allocate and bind funcitonal units
     vector<Op> res_type;
-    
+    vector<vec_mat> FUs;
     for (int i = 0; i < num_resources.size(); i++){
         // Clear mat
         res_type.clear();
         
         for(Op res : comp.V) {if (res.type == i){res_type.push_back(res);}}
         
-        allocateAndBind(res_type, int(res_type.size()));
+        FUs.push_back(allocateAndBind(res_type, int(res_type.size())));
+    }
+    
+    for(auto FU : FUs){
+        cout << "\n\nClique...\n\n";
+        printMat(FU);
         
     }
     

@@ -63,13 +63,15 @@ int** vec_mat2c_mat(vec_mat& v_mat){
     return c_mat;
 }
 
-template void allocateAndBind<Op>(vector<Op>, int);
+template vec_mat allocateAndBind<Op>(vector<Op>, int);
 
-template void allocateAndBind<Reg>(vector<Reg>, int);
+template vec_mat allocateAndBind<Reg>(vector<Reg>, int);
 
 //MARK: allocateAndBind definition
 template <typename A>
-void allocateAndBind(vector<A> vertices, int num_vertices){
+vec_mat allocateAndBind(vector<A> vertices, int num_vertices){
+    
+    vec_mat ret_clique;
 
     vec_mat comp;
     resizeAdjMatrix(comp, num_vertices);
@@ -86,6 +88,19 @@ void allocateAndBind(vector<A> vertices, int num_vertices){
     
     clique_partition(vec_mat2c_mat(comp), int(comp.size()));
     
+    // For each clique in the clique set
+    for (int i = 0; clique_set[i].size != UNKNOWN; i++){
+        
+        vector<int> members;
+        
+        for( int j = 0; j < clique_set[i].size; j++){
+            members.push_back(clique_set[i].members[j]);
+        }
+            
+        ret_clique.push_back(members);
+    }
+    
+    return ret_clique;
 } // end allocateAndBind
 
 

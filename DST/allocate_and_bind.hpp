@@ -27,7 +27,7 @@ int** vec_mat2c_mat(vec_mat&);
 
 //MARK: allocateAndBind definition
 template <typename A>
-void allocateAndBind(vector<A> vertices, int num_vertices);
+vec_mat allocateAndBind(vector<A> vertices, int num_vertices);
 
 
 
