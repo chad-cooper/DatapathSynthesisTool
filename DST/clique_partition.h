@@ -1,25 +1,9 @@
-//#include "clique_partition.h"
-#ifndef clique_partition_c
-#define clique_partition_c
+#ifndef CLIQUE_PARTITION_C
+#define CLIQUE_PARTITION_C
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-
-#define UNKNOWN -12345
-#define MAXCLIQUES 200
-
-#define CLIQUE_UNKNOWN -12345
-#define CLIQUE_TRUE 100
-#define CLIQUE_FALSE 110
-
-struct clique
-{
-    int members[MAXCLIQUES];           /* members of the clique */
-    int size;                          /* number of members in the clique */
-};
-
-struct clique clique_set[MAXCLIQUES];   /* stores the clique partitioning results */
+#include "stdio.h"
+#include "stdlib.h"
+#include "assert.h"
 
 /****************************************************************************
  *  This is a C implementation of the Tseng and Seiworick's Clique
@@ -117,6 +101,23 @@ struct clique clique_set[MAXCLIQUES];   /* stores the clique partitioning result
  *  end
  *****************************************************************************
  */
+
+#define UNKNOWN -12345
+#define MAXCLIQUES 200
+
+#define CLIQUE_UNKNOWN -12345
+#define CLIQUE_TRUE 100
+#define CLIQUE_FALSE 110
+
+struct clique
+{
+    int members[MAXCLIQUES];           /* members of the clique */
+    int size;                          /* number of members in the clique */
+};
+
+struct clique clique_set[MAXCLIQUES];   /* stores the clique partitioning results */
+
+/********************************************************************************/
 
 int input_sanity_check(int** compat, int array_dimension)
 {
@@ -800,5 +801,4 @@ int clique_partition(int** compat, int nodesize)
     printf("**************************************\n\n");
     return 1;
 }
-
 #endif
