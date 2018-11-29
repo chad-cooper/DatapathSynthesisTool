@@ -72,12 +72,6 @@ int main(int argc, const char * argv[]) {
         
     }
     
-//    for(auto FU : FUs){
-//        cout << "\n\nClique...\n\n";
-//        printMat(FU);
-//
-//    }
-    
     cout << endl;
     
     return 0;
