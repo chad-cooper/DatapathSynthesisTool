@@ -40,7 +40,19 @@ int main(int argc, const char * argv[]) {
     if(print) comp.printVertices();
     
     // Allocate and bind funcitonal units
-    allocateAndBind(comp.V, num_resources.size());
+    vector<Op> res_type;
+    
+    for (int i = 0; i < num_resources.size(); i++){
+        // Clear mat
+        res_type.clear();
+        
+        for(Op res : comp.V) {if (res.type == i){res_type.push_back(res);}}
+        
+        allocateAndBind(res_type, int(res_type.size()));
+        
+    }
+    
+    cout << endl;
     
     return 0;
 }

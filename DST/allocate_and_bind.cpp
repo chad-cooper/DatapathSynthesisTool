@@ -84,6 +84,8 @@ void allocateAndBind(vector<A> vertices, int num_vertices){
         }
     }
     
+    clique_partition(vec_mat2c_mat(comp), int(comp.size()));
+    
 } // end allocateAndBind
 
 
