@@ -44,6 +44,16 @@ public:
     bool isReading = false;
     bool dataValid = false;
     
+    bool intersects(const Reg& other) const {
+        
+        // Checks if two
+        bool disjoint = (lifetime[1] < other.lifetime[0] || lifetime[0] > other.lifetime[1]);
+        
+        return !disjoint;
+        
+    }
+    
+    
     bool operator==(const Reg &other) const {
         bool eq = true;
         
@@ -58,6 +68,10 @@ public:
         eq = (lifetime == other.lifetime) && eq;
         
         return eq;
+    }
+    
+    bool operator!=(const Reg &other) const {
+        return !(*this == other);
     }
     
     friend ostream& operator<<(ostream& os, const Reg& reg);
@@ -94,6 +108,9 @@ public:
     
     void finished() {output_reg->dataValid = true;}
     
+    bool intersects(const Op& other) const {return start_time == other.start_time;}
+    
+    
     bool operator==(const Op &other) const {
         // Compare the values, and return the result.
         bool eq = true;
@@ -114,6 +131,10 @@ public:
         
         return eq;
         
+    }
+    
+    bool operator!=(const Op &other) const {
+        return !(*this == other);
     }
     
     friend ostream& operator<<(ostream& os, const Op& op);

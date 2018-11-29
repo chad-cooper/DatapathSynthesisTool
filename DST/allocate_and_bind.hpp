@@ -14,21 +14,27 @@
 
 typedef vector<vector<int>> vec_mat;
 
-//template <typename A>
-//void allocateAndBind(vector<A>, int);
+// Resizes and inserts a value into the adj matrix
+void insertAdjMat(vec_mat&, int, int, int);
 
+// Expands a matrix (vector of vectors) to maintain a square shape
+void resizeAdjMatrix(vec_mat&, int&);
+
+void printMat(vec_mat&);
+
+//MARK: allocateAndBind definition
 template <typename A>
-void allocateAndBind(vector<A> vertices, int loop_size){
+void allocateAndBind(vector<A> vertices, int num_vertices){
 /*
 for the size of the loop do
     G(V) <- NULL  // G(V,E) is a compatibility graph
     G(E) <- NULL
     // Build the compatibility graph
-    for each operation op1 of type T do
+    for each vertex A1 do
         if(A1 is not in G) then
             G(V) <- G(V) U {A1}
         end if
-        for each operation op2 of type T do
+        for each vertex A2
             if(A2 is not in G) then
                 G(V) <- G(V) U {A2}
             end if
@@ -49,22 +55,19 @@ end for
 */
     
     
+    vec_mat comp;
+    resizeAdjMatrix(comp, num_vertices);
     
-    for(int i = 0; i < loop_size; i++){
-        vec_mat comp;
-        
-    } // end for all op_types
+    for(int i = 0; i < num_vertices; i++){
+        for(int j = 0; j < num_vertices; j++) {
+            if(vertices[i] != vertices[j]){
+                if (!vertices[i].intersects(vertices[j])){
+                    insertAdjMat(comp, i, j, 1);
+                }
+            }
+        }
+    }
     
-    
-    
-}
-
-// Resizes and inserts a value into the adj matrix
-void insertAdjMat(vec_mat&, int, int, int);
-
-// Expands a matrix (vector of vectors) to maintain a square shape
-void resizeAdjMatrix(vec_mat&, int&);
-
-void printMat(vec_mat&);
+} // end allocateAndBind
 
 #endif /* allocate_and_bind_hpp */
