@@ -10,6 +10,7 @@
 		632FB9B021AF001B00EEEABF /* allocate_and_bind.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 632FB9AE21AF001B00EEEABF /* allocate_and_bind.cpp */; };
 		63AD1B7721AE2C6A00CE030B /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63AD1B7621AE2C6A00CE030B /* main.cpp */; };
 		63AD1B7F21AE2C8600CE030B /* DCS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63AD1B7D21AE2C8600CE030B /* DCS.cpp */; };
+		63F084C321B0730B0095DF86 /* clique_partition.c in Sources */ = {isa = PBXBuildFile; fileRef = 63F084C221B0730B0095DF86 /* clique_partition.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -31,6 +32,8 @@
 		63AD1B7621AE2C6A00CE030B /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		63AD1B7D21AE2C8600CE030B /* DCS.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DCS.cpp; sourceTree = "<group>"; };
 		63AD1B7E21AE2C8600CE030B /* DCS.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DCS.hpp; sourceTree = "<group>"; };
+		63F084C121B0730B0095DF86 /* clique_partition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = clique_partition.h; sourceTree = "<group>"; };
+		63F084C221B0730B0095DF86 /* clique_partition.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = clique_partition.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +71,8 @@
 				63AD1B7E21AE2C8600CE030B /* DCS.hpp */,
 				632FB9AE21AF001B00EEEABF /* allocate_and_bind.cpp */,
 				632FB9AF21AF001B00EEEABF /* allocate_and_bind.hpp */,
+				63F084C221B0730B0095DF86 /* clique_partition.c */,
+				63F084C121B0730B0095DF86 /* clique_partition.h */,
 			);
 			path = DST;
 			sourceTree = "<group>";
@@ -131,6 +136,7 @@
 				632FB9B021AF001B00EEEABF /* allocate_and_bind.cpp in Sources */,
 				63AD1B7F21AE2C8600CE030B /* DCS.cpp in Sources */,
 				63AD1B7721AE2C6A00CE030B /* main.cpp in Sources */,
+				63F084C321B0730B0095DF86 /* clique_partition.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
