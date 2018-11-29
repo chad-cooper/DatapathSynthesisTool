@@ -53,7 +53,6 @@ public:
         
     }
     
-    
     bool operator==(const Reg &other) const {
         bool eq = true;
         
