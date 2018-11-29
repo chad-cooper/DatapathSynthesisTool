@@ -13,7 +13,7 @@ int main(int argc, const char * argv[]) {
     
     bool print = true;
     
-    CompatibilityGraph<Op, Reg> comp = readAUDI("toyexample.aif", print);
+    CompatibilityGraph<Op, Reg> comp = readAUDI("lattice.aif", print);
     
     array<int, 4> num_resources = {2, 2, 2, 2};
     
@@ -73,6 +73,13 @@ int main(int argc, const char * argv[]) {
     }
     
     cout << endl;
+    
+    // Determine the lifetime of all the edges
+    assignLifetime(comp);
+    
+    vec_mat reg_cliques = allocateAndBind(comp.E, int(comp.E.size()));
+    
+    printRegLifetimes(comp.E);
     
     return 0;
 }

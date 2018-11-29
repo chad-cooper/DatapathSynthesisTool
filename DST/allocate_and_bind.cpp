@@ -80,7 +80,6 @@ vec_mat allocateAndBind(vector<A> vertices, int num_vertices){
         for(int j = 0; j < num_vertices; j++) {
             if(vertices[i] != vertices[j]){
                 if (!vertices[i].intersects(vertices[j])){
-                    //insertAdjMat(comp, i, j, 1);
                     comp[i][j] = 1;
                 }
             }

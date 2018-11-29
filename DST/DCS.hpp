@@ -36,13 +36,14 @@ public:
     reg_type type; // Register type
     int width; // Bit width of register
     array<int, 2> lifetime = {0, 0}; // lt[0] = first time written to, lt[1] = last time read from
-    int lifespan = lifetime[1] - lifetime[0];
-    
+    int lifespan;
     
     // States
     bool isWriting = false;
     bool isReading = false;
     bool dataValid = false;
+    
+    void setLifespan(){lifespan = lifetime[1] - lifetime[0];}
     
     bool intersects(const Reg& other) const {
         
@@ -172,5 +173,8 @@ vector<int> LIST_L(CompatibilityGraph<Op, Reg>&, array<int, 4>&);
 
 void assignStartTimes(CompatibilityGraph<Op, Reg>&, vector<int>&);
 
+void assignLifetime(CompatibilityGraph<Op, Reg>&);
+
+void printRegLifetimes(vector<Reg>&);
 
 #endif /* DCS_hpp */

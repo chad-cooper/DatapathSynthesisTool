@@ -101,7 +101,7 @@ CompatibilityGraph<Op, Reg> readAUDI(string audi, bool print){
     return comp;
 }
 
-//MARK: LIST_L implementation
+//MARK: Schedulers
 vector<int> LIST_L(CompatibilityGraph<Op, Reg>& G, array<int, 4>& a){
     
     // First, check if we have the necessary number of resources...
@@ -150,6 +150,41 @@ vector<int> LIST_L(CompatibilityGraph<Op, Reg>& G, array<int, 4>& a){
     return t;
 }
 
+void assignStartTimes(CompatibilityGraph<Op, Reg>& G, vector<int>& t){
+    for(int i = 0; i < G.V.size(); i++){
+        G.V[i].start_time = t[i];
+    }
+}
+
+void assignLifetime(CompatibilityGraph<Op, Reg>& G){
+    // The lifetime of a register is time from the first write to the last read
+    
+    // Determine latest timestep...
+    int latest_time = 0;
+    for(auto op : G.V){
+        if(op.start_time > latest_time) { latest_time = op.start_time; }
+    }
+    
+    for(auto op = G.V.begin(); op != G.V.end(); op++){
+        
+        op->output_reg->lifetime[0] = op->start_time;
+        
+        for(auto input = op->input_reg.begin(); input != op->input_reg.end(); input ++){
+            (*input)->lifetime[1] = op->start_time;
+        }
+        
+        if (op->output_reg->type == Reg::output){
+            op->output_reg->lifetime[1] = latest_time;
+        }
+        
+    }
+}
+
+void printRegLifetimes(vector<Reg>& registers){
+    for(auto reg : registers){
+        cout << reg.name << ": (" << reg.lifetime[0] << ", " << reg.lifetime[1] << ")" << endl;
+    }
+}
 
 //MARK: Overloaded << for Reg and Op
 ostream& operator<<(ostream& os, const Reg& reg)
@@ -176,10 +211,4 @@ X* getXByName(vector<X>& x, string& s){
         }
     }
     return nullptr;
-}
-
-void assignStartTimes(CompatibilityGraph<Op, Reg>& G, vector<int>& t){
-    for(int i = 0; i < G.V.size(); i++){
-        G.V[i].start_time = t[i];
-    }
 }
