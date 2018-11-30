@@ -1,0 +1,13 @@
+inputs c1 8 x0 8 c2 8 x1 8 c3 8 x2 8 c4 8 x3 8 c5 8 x4 8  
+outputs yout 8
+regs r0 8 r1 8 r2 8 r3 8 r4 8 r5 8 r6 8 r7 8 
+op1 MULT 8 c1 x0 r0
+op2 MULT 8 c2 x1 r1
+op3 ADD 8 r0 r1 r2 
+op4 MULT 8 c3 x2 r3
+op5 ADD 8 r2 r3 r4 
+op6 MULT 8 c4 x3 r5
+op7 ADD 8 r4 r5 r6 
+op8 MULT 8 c5 x4 r7
+op9 ADD 8 r6 r7 yout
+end 

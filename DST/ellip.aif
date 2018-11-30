@@ -1,0 +1,39 @@
+inputs inp 4 svin2 4 svin13 4 svin18 4 svin26 4 svin33 4 svin38 4 svin39 4 TWO 4
+outputs svout2 4 svout13 4 svout18 4 svout26 4 svout33 4 svout38 4 svout39 4
+regs outpi 4 var3   4 var32  4 var12  4 var20 4 var25 4 var21 4     var24 4 var19  4 var27 4 var11 4 var22 4 var29 4 var9 4 var30 4 var8   4 var31 4 var7 4 var10 4 var28 4 var41 4 var6 4 var15 4 var35 4 var4 4 var16 4 var36 4
+op1 ADD 4 inp svin2 var3
+op2 ADD 4 svin33 svin39 var32
+op3 ADD 4 var3 svin13  var12
+op4 ADD 4 var12 svin26 var20
+op5 ADD 4 var20 var32  var25
+op6 MULT 4 var25 TWO var21
+op7 MULT 4 var25 TWO var24
+op8 ADD 4 var12 var21 var19
+op9 ADD 4 var24 var32 var27
+op10 ADD 4 var12 var19 var11
+op11 ADD 4 var19 var25 var22
+op12 ADD 4 var27 var32 var29
+op13 MULT 4 var11 TWO var9
+op14 ADD 4 var22 var27 svout26
+op15 MULT 4 var29 TWO var30
+op16 ADD 4 var3 var9 var8
+op17 ADD 4 var30 svin39 var31
+op18 ADD 4 var3 var8 var7
+op19 ADD 4 var8 var19 var10
+op20 ADD 4 var27 var31 var28
+op21 ADD 4 var31 svin39 var41
+op22 MULT 4 var7 TWO var6
+op23 ADD 4 var10 svin18 var15
+op24 ADD 4 svin38 var28 var35
+op25 MULT 4 var41 TWO outpi
+op26 ADD 4 inp var6 var4
+op27 MULT 4 var15 TWO var16
+op28 MULT 4 var35 TWO var36
+op29 ADD 4 var31 outpi svout39
+op30 ADD 4 var4 var8 svout2
+op31 ADD 4 var16 svin18 svout18
+op32 ADD 4 svin38 var36 svout38
+op33 ADD 4 var15 svout18 svout13
+op34 ADD 4 svout38 var35 svout33
+
+end

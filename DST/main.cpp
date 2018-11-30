@@ -14,8 +14,7 @@
 int main(int argc, const char * argv[]) {
     
     bool print = true;
-    
-    int bit_width = 0;
+
     
     ADUIGraph audi = readAUDI("toyexample.aif", print);
     
@@ -40,10 +39,9 @@ int main(int argc, const char * argv[]) {
     cout << endl;
     
     assignStartTimes(audi, t);
+
     
-    if(print) audi.printVertices();
-    
-    // Allocate and bind funcitonal units
+    // Allocate and bind functional units
     vector<Op> res_type;
     vector<vec_mat> FUsByType;
     for (int i = 0; i < NUM_RES_TYPES; i++){
