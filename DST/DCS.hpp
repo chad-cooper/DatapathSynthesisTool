@@ -147,14 +147,15 @@ public:
 ostream& operator<<(ostream& os, const Op& op);
 
 
-template <class VT, class ET>
-class CompatibilityGraph {
+class ADUIGraph {
     
 public:
     
     // Vertices and edges
-    vector<VT> V;
-    vector<ET> E;
+    vector<Op> V;
+    vector<Reg> E;
+    
+    int bit_width;
     
     void printVertices() {for(auto v: V) {cout << v << endl << endl;}}
     void printEdges() {for(auto e: E) {cout << e << endl << endl;}}
@@ -177,20 +178,18 @@ public:
 template <typename X>
 X* getXByName(vector<X>&, string&);
 
-CompatibilityGraph<Op, Reg> readAUDI(string, bool);
+ADUIGraph readAUDI(string, bool);
 
-vector<int> LIST_L(CompatibilityGraph<Op, Reg>&, array<int, 4>&);
+vector<int> LIST_L(ADUIGraph&, array<int, 4>&);
 
-void assignStartTimes(CompatibilityGraph<Op, Reg>&, vector<int>&);
+void assignStartTimes(ADUIGraph&, vector<int>&);
 
-void assignLifetime(CompatibilityGraph<Op, Reg>&);
+void assignLifetime(ADUIGraph&);
 
 void printRegLifetimes(vector<Reg>&);
 
-//TODO: Add generateFUMux here
-vector<Mux> generateFUMux(vec_mat&, int, int);
+vector<vector<Mux>> generateFUMux(vec_mat& FUsForType, int width, int num_inputs = 2);
 
-//TODO: Add genereateREGMux here
 vector<Mux> generateREGMux(vec_mat&, int);
 
 

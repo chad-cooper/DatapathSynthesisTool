@@ -17,7 +17,7 @@ int main(int argc, const char * argv[]) {
     
     int bit_width = 0;
     
-    CompatibilityGraph<Op, Reg> comp = readAUDI("toyexample.aif", print);
+    ADUIGraph audi = readAUDI("toyexample.aif", print);
     
     array<int, NUM_RES_TYPES> available_resources = {2, 2, 2, 2};
     
@@ -26,7 +26,7 @@ int main(int argc, const char * argv[]) {
     
     vector<int> t;
     try {
-         t = LIST_L(comp, available_resources);
+         t = LIST_L(audi, available_resources);
     } catch (invalid_argument& e) {
         cout << e.what();
         return 1;
@@ -34,14 +34,14 @@ int main(int argc, const char * argv[]) {
     
     cout << endl;
     for (int i = 0; i < t.size(); i++){
-        cout << "Operation: " << comp.V[i].name << ", start time: " << t[i] << endl;
+        cout << "Operation: " << audi.V[i].name << ", start time: " << t[i] << endl;
     }
     
     cout << endl;
     
-    assignStartTimes(comp, t);
+    assignStartTimes(audi, t);
     
-    if(print) comp.printVertices();
+    if(print) audi.printVertices();
     
     // Allocate and bind funcitonal units
     vector<Op> res_type;
@@ -50,7 +50,7 @@ int main(int argc, const char * argv[]) {
         // Clear mat
         res_type.clear();
         
-        for(Op res : comp.V) {if (res.type == i){res_type.push_back(res);}}
+        for(Op res : audi.V) {if (res.type == i){res_type.push_back(res);}}
         
         FUsByType.push_back(allocateAndBind(res_type, int(res_type.size())));
     }
@@ -79,17 +79,20 @@ int main(int argc, const char * argv[]) {
     cout << endl;
     
     // Determine the lifetime of all the edges
-    assignLifetime(comp);
+    assignLifetime(audi);
     
-    vec_mat reg_cliques = allocateAndBind(comp.E, int(comp.E.size()));
+    vec_mat reg_cliques = allocateAndBind(audi.E, int(audi.E.size()));
     
-    printRegLifetimes(comp.E);
+    printRegLifetimes(audi.E);
     
-//    vec_mat FUMuxes;
-//    for(int i = 0; i < NUM_RES_TYPES; i++){
-//        FUMuxes.push_back(generateFUMux(FUsByType[i], ))
-//    }
-
+    vector<vector<vector<Mux>>> FUMuxes;
+    for(int i = 0; i < NUM_RES_TYPES; i++){
+        FUMuxes.push_back(generateFUMux(FUsByType[i], audi.bit_width));
+    }
+    
+    
+    vector<Mux> REGMuxes = generateREGMux(reg_cliques, audi.bit_width);
+    
     
     
     return 0;

@@ -9,9 +9,9 @@
 #include "DCS.hpp"
 
 //MARK: Build compatibility graph from AUDI file
-CompatibilityGraph<Op, Reg> readAUDI(string audi, bool print){
+ADUIGraph readAUDI(string audi, bool print){
     
-    CompatibilityGraph<Op, Reg> comp;
+    ADUIGraph audiGraph;
     
     std::string discard, line, reg_name, op_name, op_type_str, in1, in2, out;
     int width;
@@ -28,7 +28,7 @@ CompatibilityGraph<Op, Reg> readAUDI(string audi, bool print){
     iss >> discard; // throwaway 'inputs'
     
     while (iss >> reg_name >> width){
-        comp.E.emplace_back(reg_name, Reg::input, width, true);
+        audiGraph.E.emplace_back(reg_name, Reg::input, width, true);
     }
     
     getline(audiFile, line); // OUTPUTS
@@ -39,7 +39,7 @@ CompatibilityGraph<Op, Reg> readAUDI(string audi, bool print){
     iss >> discard; // throw away 'outputs'
     
     while (iss >> reg_name >> width){
-        comp.E.emplace_back(reg_name, Reg::output, width, false);
+        audiGraph.E.emplace_back(reg_name, Reg::output, width, false);
     }
     
     getline(audiFile, line); // Intermediate registers
@@ -51,7 +51,7 @@ CompatibilityGraph<Op, Reg> readAUDI(string audi, bool print){
     iss >> discard; // throw away 'regs'
     
     while (iss >> reg_name >> width) {
-        comp.E.emplace_back(reg_name, Reg::intermediate, width, false);
+        audiGraph.E.emplace_back(reg_name, Reg::intermediate, width, false);
     }
     
     getline(audiFile, line);
@@ -80,10 +80,10 @@ CompatibilityGraph<Op, Reg> readAUDI(string audi, bool print){
                     break;
             }
             
-            array<Reg*, 2> inputs = {getXByName<Reg>(comp.E, in1), getXByName<Reg>(comp.E, in2)};
-            Reg* output = getXByName<Reg>(comp.E, out);
+            array<Reg*, 2> inputs = {getXByName<Reg>(audiGraph.E, in1), getXByName<Reg>(audiGraph.E, in2)};
+            Reg* output = getXByName<Reg>(audiGraph.E, out);
             
-            comp.V.emplace_back(op_name, op_type, width, inputs, output);
+            audiGraph.V.emplace_back(op_name, op_type, width, inputs, output);
         }
         
         getline(audiFile, line);
@@ -98,11 +98,13 @@ CompatibilityGraph<Op, Reg> readAUDI(string audi, bool print){
     if (print) std::cout << "end" << std::endl;
     audiFile.close(); // graph read
     
-    return comp;
+    audiGraph.bit_width = width;
+    
+    return audiGraph;
 }
 
 //MARK: Schedulers
-vector<int> LIST_L(CompatibilityGraph<Op, Reg>& G, array<int, 4>& a){
+vector<int> LIST_L(ADUIGraph& G, array<int, 4>& a){
     
     // First, check if we have the necessary number of resources...
     array<int, 4> num_needed = {0};
@@ -150,13 +152,13 @@ vector<int> LIST_L(CompatibilityGraph<Op, Reg>& G, array<int, 4>& a){
     return t;
 }
 
-void assignStartTimes(CompatibilityGraph<Op, Reg>& G, vector<int>& t){
+void assignStartTimes(ADUIGraph& G, vector<int>& t){
     for(int i = 0; i < G.V.size(); i++){
         G.V[i].start_time = t[i];
     }
 }
 
-void assignLifetime(CompatibilityGraph<Op, Reg>& G){
+void assignLifetime(ADUIGraph& G){
     // The lifetime of a register is time from the first write to the last read
     
     // Determine latest timestep...
@@ -215,16 +217,19 @@ X* getXByName(vector<X>& x, string& s){
     return nullptr;
 }
 
-vector<Mux> generateFUMux(vec_mat& clickset, int width, int num_inputs = 2) {
-    vector<Mux> muxes;
+vector<vector<Mux>> generateFUMux(vec_mat& FUsForType, int width, int num_inputs) {
+    vector<vector<Mux>> muxes;
     
     int n = 0;
-    for (auto FU : clickset) {
+    for (int i = 0; i < FUsForType.size(); i++) {
         // n is the number of operations bound to this FU
-        n = int(FU.size());
+        n = int(FUsForType[i].size());
         
-        for(int i = 0; i < num_inputs; i++){
-            muxes.emplace_back(n, width);
+        vector<Mux> FUMux;
+        muxes.push_back(FUMux);
+        
+        for(int j = 0; j < num_inputs; j++){
+            muxes[i].emplace_back(n, width);
         }
     }
     
