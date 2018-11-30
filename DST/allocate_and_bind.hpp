@@ -12,9 +12,6 @@
 #include <stdio.h>
 #include "DCS.hpp"
 
-
-typedef vector<vector<int>> vec_mat;
-
 // Resizes and inserts a value into the adj matrix
 void insertAdjMat(vec_mat&, int, int, int);
 

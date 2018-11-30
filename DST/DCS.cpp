@@ -214,3 +214,33 @@ X* getXByName(vector<X>& x, string& s){
     }
     return nullptr;
 }
+
+vector<Mux> generateFUMux(vec_mat& clickset, int width, int num_inputs = 2) {
+    vector<Mux> muxes;
+    
+    int n = 0;
+    for (auto FU : clickset) {
+        // n is the number of operations bound to this FU
+        n = int(FU.size());
+        
+        for(int i = 0; i < num_inputs; i++){
+            muxes.emplace_back(n, width);
+        }
+    }
+    
+    return muxes;
+}
+
+vector<Mux> generateREGMux(vec_mat& clickset, int width){
+    vector<Mux> muxes;
+    
+    int n = 0;
+    
+    for(auto R : clickset){
+        n = int(R.size());
+        
+        muxes.emplace_back(n, width);
+    }
+    
+    return muxes;
+}

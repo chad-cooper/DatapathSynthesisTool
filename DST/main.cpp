@@ -9,20 +9,24 @@
 //#include "DCS.hpp"
 #include "allocate_and_bind.hpp"
 
+#define NUM_RES_TYPES 4
+
 int main(int argc, const char * argv[]) {
     
     bool print = true;
     
+    int bit_width = 0;
+    
     CompatibilityGraph<Op, Reg> comp = readAUDI("toyexample.aif", print);
     
-    array<int, 4> num_resources = {2, 2, 2, 2};
+    array<int, NUM_RES_TYPES> available_resources = {2, 2, 2, 2};
     
 //    cout << "Enter the number of available resources in the order of [ADD SUB MULT DIV]:\n";
 //    cin >> num_resources[0] >> num_resources[1] >> num_resources[2] >> num_resources[3];
     
     vector<int> t;
     try {
-         t = LIST_L(comp, num_resources);
+         t = LIST_L(comp, available_resources);
     } catch (invalid_argument& e) {
         cout << e.what();
         return 1;
@@ -41,18 +45,18 @@ int main(int argc, const char * argv[]) {
     
     // Allocate and bind funcitonal units
     vector<Op> res_type;
-    vector<vec_mat> FUs;
-    for (int i = 0; i < num_resources.size(); i++){
+    vector<vec_mat> FUsByType;
+    for (int i = 0; i < NUM_RES_TYPES; i++){
         // Clear mat
         res_type.clear();
         
         for(Op res : comp.V) {if (res.type == i){res_type.push_back(res);}}
         
-        FUs.push_back(allocateAndBind(res_type, int(res_type.size())));
+        FUsByType.push_back(allocateAndBind(res_type, int(res_type.size())));
     }
     
     string type;
-    for(int i = 0; i < FUs.size(); i++){
+    for(int i = 0; i < NUM_RES_TYPES; i++){
         switch (i) {
             case 0:
                 type = "ADD";
@@ -68,7 +72,7 @@ int main(int argc, const char * argv[]) {
                 break;
         }
         cout << "\n\nCliques for " << type << "...\n\n";
-        printMat(FUs[i]);
+        printMat(FUsByType[i]);
         
     }
     
@@ -80,6 +84,13 @@ int main(int argc, const char * argv[]) {
     vec_mat reg_cliques = allocateAndBind(comp.E, int(comp.E.size()));
     
     printRegLifetimes(comp.E);
+    
+//    vec_mat FUMuxes;
+//    for(int i = 0; i < NUM_RES_TYPES; i++){
+//        FUMuxes.push_back(generateFUMux(FUsByType[i], ))
+//    }
+
+    
     
     return 0;
 }

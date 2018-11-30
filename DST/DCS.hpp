@@ -20,6 +20,8 @@
 
 using namespace std;
 
+typedef vector<vector<int>> vec_mat;
+
 class Reg {
 public:
     enum reg_type {input, intermediate, output}; // A register can have one of these types
@@ -154,15 +156,23 @@ public:
     vector<VT> V;
     vector<ET> E;
     
-    int** adj; // Adjacency list for clique partitioning
-    
-    void buildAdjMatrix(vector<VT>&);
-    
     void printVertices() {for(auto v: V) {cout << v << endl << endl;}}
     void printEdges() {for(auto e: E) {cout << e << endl << endl;}}
 };
 
+class Mux {
+public:
+    int width;
+    int num_inputs;
+    
+    Mux(int n_inputs, int bit_width){
+        num_inputs = n_inputs;
+        width = bit_width;
+    }
+};
 
+
+//MARK: Aux and helper functions
 // Return pointer to X based on X.name
 template <typename X>
 X* getXByName(vector<X>&, string&);
@@ -176,5 +186,12 @@ void assignStartTimes(CompatibilityGraph<Op, Reg>&, vector<int>&);
 void assignLifetime(CompatibilityGraph<Op, Reg>&);
 
 void printRegLifetimes(vector<Reg>&);
+
+//TODO: Add generateFUMux here
+vector<Mux> generateFUMux(vec_mat&, int, int);
+
+//TODO: Add genereateREGMux here
+vector<Mux> generateREGMux(vec_mat&, int);
+
 
 #endif /* DCS_hpp */
