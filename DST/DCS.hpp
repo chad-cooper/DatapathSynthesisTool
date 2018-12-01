@@ -161,16 +161,55 @@ public:
     void printEdges() {for(auto e: E) {cout << e << endl << endl;}}
 };
 
+//TODO: Make class template to point to either physical FU or physical register
+//template <class P, class L>
 class Mux {
 public:
+//    string name;
     int width;
     int num_inputs;
+//    vector<L*>
+//
+//    P* phys; // Pointer to physical FU or register
+    
     
     Mux(int n_inputs, int bit_width){
         num_inputs = n_inputs;
         width = bit_width;
     }
 };
+
+//TODO: Make VHDLFU class
+/*
+ class VHDLFU {
+ public:
+ 
+ string name;
+ int width;
+ 
+ // Pointer to functional unit clique that is bound to this physical functional unit.
+ // The FU clique in turn is actually a list of indices for the logical functions
+ // that are the audi graph vertices ( G.V ).
+ vector<int>* FU_clique;
+ 
+ };
+ */
+
+//TODO: Make VHDLReg class
+/*
+ class VHDLReg {
+ public:
+ 
+ string name;
+ int width;
+ 
+ // Pointer to register clique that is bound to this physical register.
+ // The register clique in turn is actually a list of indices for the logical
+ // registers that are the edges in the audi graph ( G.E ).
+ vector<int>* reg_clique;
+ 
+ };
+ */
 
 
 //MARK: Aux and helper functions

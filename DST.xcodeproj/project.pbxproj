@@ -11,6 +11,7 @@
 		632FB9B021AF001B00EEEABF /* allocate_and_bind.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 632FB9AE21AF001B00EEEABF /* allocate_and_bind.cpp */; };
 		63AD1B7721AE2C6A00CE030B /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63AD1B7621AE2C6A00CE030B /* main.cpp */; };
 		63AD1B7F21AE2C8600CE030B /* DCS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63AD1B7D21AE2C8600CE030B /* DCS.cpp */; };
+		63FBE1E421B0F8E30057655B /* VHDL_Gen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63FBE1E221B0F8E30057655B /* VHDL_Gen.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -33,6 +34,8 @@
 		63AD1B7621AE2C6A00CE030B /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		63AD1B7D21AE2C8600CE030B /* DCS.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DCS.cpp; sourceTree = "<group>"; };
 		63AD1B7E21AE2C8600CE030B /* DCS.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DCS.hpp; sourceTree = "<group>"; };
+		63FBE1E221B0F8E30057655B /* VHDL_Gen.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VHDL_Gen.cpp; sourceTree = "<group>"; };
+		63FBE1E321B0F8E30057655B /* VHDL_Gen.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = VHDL_Gen.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +69,8 @@
 			isa = PBXGroup;
 			children = (
 				63AD1B7621AE2C6A00CE030B /* main.cpp */,
+				63FBE1E221B0F8E30057655B /* VHDL_Gen.cpp */,
+				63FBE1E321B0F8E30057655B /* VHDL_Gen.hpp */,
 				63AD1B7E21AE2C8600CE030B /* DCS.hpp */,
 				63AD1B7D21AE2C8600CE030B /* DCS.cpp */,
 				632FB9AF21AF001B00EEEABF /* allocate_and_bind.hpp */,
@@ -132,6 +137,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				632FB9B021AF001B00EEEABF /* allocate_and_bind.cpp in Sources */,
+				63FBE1E421B0F8E30057655B /* VHDL_Gen.cpp in Sources */,
 				63AD1B7F21AE2C8600CE030B /* DCS.cpp in Sources */,
 				63AD1B7721AE2C6A00CE030B /* main.cpp in Sources */,
 				63251F4F21B02A3300D25FDD /* clique_partition.h in Sources */,

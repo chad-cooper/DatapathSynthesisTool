@@ -6,7 +6,7 @@ LIBRARY WORK;
 entity c_subtractor is
   generic(width: integer := 4);
   port(input1, input2: in std_logic_vector((width-1) downto 0);
-       output :   out std_logic_vector(width downto 0));
+       output :   out std_logic_vector(width-1 downto 0));
 end c_subtractor;
 
 architecture behavior of c_subtractor is
@@ -44,7 +44,7 @@ begin
 	     difference := difference/2;
       end loop;
 
-      output <= temp;
+      output <= temp(width-1 downto 0);
       
   end process;
 end behavior;

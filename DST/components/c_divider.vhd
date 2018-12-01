@@ -3,7 +3,7 @@ LIBRARY ieee;
   use ieee.std_logic_arith.all;
   use ieee.std_logic_signed.all;
 
-entity c_divider is
+entity single_input_c_divider is
   generic(width: integer := 4;const: integer := 16);
   port(input: std_logic_vector((width-1) downto 0);
        output: out std_logic_vector((width - 1) downto 0));

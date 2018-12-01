@@ -31,6 +31,7 @@ int main(int argc, const char * argv[]) {
         return 1;
     }
     
+    // Print start times
     cout << endl;
     for (int i = 0; i < t.size(); i++){
         cout << "Operation: " << audi.V[i].name << ", start time: " << t[i] << endl;

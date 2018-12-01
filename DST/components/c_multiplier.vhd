@@ -10,7 +10,7 @@ entity c_multiplier is
   generic(width: integer := 4);
   port(input1: std_logic_vector((width-1) downto 0);
        input2: std_logic_vector((width-1) downto 0);
-       output: out std_logic_vector((width*2)-2 downto 0));
+       output: out std_logic_vector(width-1 downto 0);
 end c_multiplier;
 
 architecture behavior of c_multiplier is
@@ -40,7 +40,7 @@ begin
 	     end if;
 	     value := value / 2;
           end loop;
-	  output <= result((2*width)-2 downto 0);
+	  output <= result(width-1 downto 0);
        end process P0;
 	 
 --         variable result: std_logic_vector((2*width) - 1 downto 0);
