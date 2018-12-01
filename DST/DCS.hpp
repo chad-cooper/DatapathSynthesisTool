@@ -37,7 +37,7 @@ public:
     string name; // Register name
     reg_type type; // Register type
     int width; // Bit width of register
-    array<int, 2> lifetime = {0, 0}; // lt[0] = first time written to, lt[1] = last time read from
+    array<int, 2> lifetime = {{0, 0}}; // lt[0] = first time written to, lt[1] = last time read from
     int lifespan;
     
     // States
@@ -165,13 +165,11 @@ public:
 //template <class P, class L>
 class Mux {
 public:
-//    string name;
+    string name;
     int width;
     int num_inputs;
-//    vector<L*>
-//
-//    P* phys; // Pointer to physical FU or register
-    
+    vector<Reg*> logIn;
+    Reg* pOut;
     
     Mux(int n_inputs, int bit_width){
         num_inputs = n_inputs;
@@ -229,7 +227,8 @@ void printRegLifetimes(vector<Reg>&);
 
 vector<vector<Mux>> generateFUMux(vec_mat& FUsForType, int width, int num_inputs = 2);
 
-vector<Mux> generateREGMux(vec_mat&, int);
+vector<Mux> generateREGMux(vec_mat&, int, vector<Reg>&);
 
+void printMuxes(vector<Mux>);
 
 #endif /* DCS_hpp */

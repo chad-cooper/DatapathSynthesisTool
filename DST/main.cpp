@@ -14,18 +14,18 @@
 int main(int argc, const char * argv[]) {
     
     bool print = true;
-
+    
     
     ADUIGraph audi = readAUDI("toyexample.aif", print);
     
     array<int, NUM_RES_TYPES> available_resources = {2, 2, 2, 2};
     
-//    cout << "Enter the number of available resources in the order of [ADD SUB MULT DIV]:\n";
-//    cin >> num_resources[0] >> num_resources[1] >> num_resources[2] >> num_resources[3];
+    //    cout << "Enter the number of available resources in the order of [ADD SUB MULT DIV]:\n";
+    //    cin >> num_resources[0] >> num_resources[1] >> num_resources[2] >> num_resources[3];
     
     vector<int> t;
     try {
-         t = LIST_L(audi, available_resources);
+        t = LIST_L(audi, available_resources);
     } catch (invalid_argument& e) {
         cout << e.what();
         return 1;
@@ -40,7 +40,7 @@ int main(int argc, const char * argv[]) {
     cout << endl;
     
     assignStartTimes(audi, t);
-
+    
     
     // Allocate and bind functional units
     vector<Op> res_type;
@@ -90,7 +90,9 @@ int main(int argc, const char * argv[]) {
     }
     
     
-    vector<Mux> REGMuxes = generateREGMux(reg_cliques, audi.bit_width);
+    vector<Mux> REGMuxes = generateREGMux(reg_cliques, audi.bit_width, audi.E);
+    
+    printMuxes(REGMuxes);
     
     
     

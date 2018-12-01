@@ -63,7 +63,7 @@ ADUIGraph readAUDI(string audi, bool print){
         if (print) std::cout << iss.str() << std::endl;
         
         while(iss >> op_name >> op_type_str >> width >> in1 >> in2 >> out){
-
+            
             Op::op_type op_type;
             switch (op_type_str[0]) {
                 case 'A':
@@ -230,22 +230,45 @@ vector<vector<Mux>> generateFUMux(vec_mat& FUsForType, int width, int num_inputs
         
         for(int j = 0; j < num_inputs; j++){
             muxes[i].emplace_back(n, width);
+            
         }
     }
     
     return muxes;
 }
 
-vector<Mux> generateREGMux(vec_mat& clickset, int width){
+vector<Mux> generateREGMux(vec_mat& clickset, int width, vector<Reg>& E){
     vector<Mux> muxes;
     
     int n = 0;
-    
+    int index = 0;
     for(auto R : clickset){
         n = int(R.size());
         
         muxes.emplace_back(n, width);
+        
+        vector<Reg*> temp;
+        for(auto idx : R){
+            temp.push_back(&(E[idx]));
+        }
+        (muxes.end()-1)->logIn = temp;
+        string tempI = to_string(index);
+        (muxes.end()-1)->name = "Mux" + tempI;
+        index++;
     }
     
     return muxes;
+}
+
+void printMuxes(vector<Mux> muxes){
+    
+    cout << "\n\t\tMuxes\n";
+    
+    for(int i = 0; i < muxes.size(); i ++){
+        cout << muxes[i].name << ": ";
+        for(int j = 0; j < muxes[i].num_inputs; j++){
+            cout << (muxes[i].logIn[j])->name << " ";
+        }
+        cout << "\n";
+    }
 }
