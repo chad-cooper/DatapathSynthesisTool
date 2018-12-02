@@ -190,7 +190,7 @@ void printRegLifetimes(vector<Reg>& registers){
     }
 }
 
-//MARK: Overloaded << for Reg and Op
+//MARK: Overloaded << for Reg, Op, VHDLFU & VHDLReg
 ostream& operator<<(ostream& os, const Reg& reg)
 {
     os << "Name: " << reg.name << endl << "Type: " << reg.type;
@@ -206,6 +206,28 @@ ostream& operator<<(ostream& os, const Op& op)
     return os;
 }
 
+
+ostream& operator<<(ostream& os, const VHDLReg& reg){
+    os << "Name: " << reg.name << endl << "Width: " << reg.width << endl
+    << "Input mux: " << reg.input_mux->name << endl
+    << "Logical outputs: ";
+    for(const auto& out : reg.boundRegs){os << out->name << " ";}
+    return os;
+}
+
+
+ostream& operator<<(ostream& os, const VHDLFU& FU){
+    os << "Name: " << FU.name << endl << "Width: " << FU.width << endl
+    << "Logical Operations: ";
+    for(const auto& op : FU.boundOps){os << op->name << " ";}
+    os << endl << "Input Muxes: " << FU.input_muxes[0]->name << " " << FU.input_muxes[1]->name << endl
+    << "Output Muxes: ";
+    for(const auto& mux : FU.output_muxes){os << mux->name << " ";}
+    
+    return os;
+}
+
+
 //MARK: Aux and helper functions
 template <typename X>
 X* getXByName(vector<X>& x, string& s){
@@ -215,141 +237,6 @@ X* getXByName(vector<X>& x, string& s){
         }
     }
     return nullptr;
-}
-
-vector<vector<Mux<VHDLFU>>> generateFUMux(vec_mat& FUsForType, Op::op_type type, int width, int num_inputs) {
-    // Number of inputs defaults to two.
-    
-    // There can be several physical functional units for each logical operation type.
-    // We need muxes that determine the data that are fed into the physical FUs.
-    vector<vector<Mux<VHDLFU>>> muxes_for_type;
-    
-    int n = 0;
-    
-    // Create a new pair of muxes for each physical FU in this clickset
-    for (int i = 0; i < FUsForType.size(); i++) {
-        string FUname = opTypeString(type) + to_string(i);
-        
-        // n is the number of operations bound to this FU
-        n = int(FUsForType[i].size());
-        
-        vector<Mux<VHDLFU>> FUMux;
-        
-        muxes_for_type.push_back(FUMux);
-        
-        // Create a mux with n inputs for both/each inputs into the funcitonal unit
-        for(int j = 0; j < num_inputs; j++){
-            
-            muxes_for_type[i].emplace_back(FUname + "_in"+to_string(j+1),n, width);
-            
-        }
-    }
-    
-    return muxes_for_type;
-}
-
-vector<VHDLFU> generateVHDLFUs(vector<Op>& V, vec_mat& FUsForType, Op::op_type type, int width, int num_inputs){
-
-    vector<VHDLFU> phys_FU;
-
-    vector<Op*> ops_of_this_type = subsetOpsByType(V, type);
-    
-    // Create a physical function unit for each clickset for this operation
-    for (int i = 0; i < FUsForType.size(); i++){
-        string FUname = opTypeString(type) + to_string(i);
-        
-        vector<Op*> bound_ops;
-        
-        for(auto idx : FUsForType[i]){
-            bound_ops.push_back(ops_of_this_type[idx]);
-        }
-        
-        phys_FU.emplace_back(FUname, width, bound_ops);
-        
-    }
-    return phys_FU;
-}
-
-vector<VHDLFU> bindVHDLFUMux(vector<vector<vector<Mux<VHDLFU>>>>& FUMuxes, vector<vector<VHDLFU>>& FUs){
-    // bindVHDLFUMux binds the multiplexers to functional units.
-    
-    vector<VHDLFU> boundFUmux;
-    
-    // For each operation type
-    for(int t = 0; t < FUMuxes.size(); t++){
-        // for each functional unit of this type
-        for(int f = 0; f < FUMuxes[t].size(); f++){
-            
-            FUMuxes[t][f][0].log_in = FUs[t][f].logical_inputs[0];
-            FUMuxes[t][f][1].log_in = FUs[t][f].logical_inputs[1];
-            
-            FUs[t][f].input_muxes[0] = &FUMuxes[t][f][0];
-            FUs[t][f].input_muxes[1] = &FUMuxes[t][f][1];
-            
-            boundFUmux.push_back(FUs[t][f]);
-            
-            FUMuxes[t][f][0].phys = &(*(boundFUmux.end()-1));
-            FUMuxes[t][f][1].phys = &(*(boundFUmux.end()-1));
-            
-        }
-    }
-    
-    return boundFUmux;
-}
-
-vector<Mux<VHDLReg>> generateREGMux(vec_mat& clickset, int width, vector<Reg>& E){
-    // Create vector of muxes to return
-    vector<Mux<VHDLReg>> muxes;
-    
-    int n = 0;
-    
-    // Generate a new mux for each clickset
-    for (int R = 0; R < clickset.size(); R++){
-        
-        // n is the number of inputs
-        n = int(clickset[R].size());
-        
-        vector<Reg*> logical_regs;
-        for (auto idx : clickset[R]) {
-            logical_regs.push_back(&(E[idx]));
-        }
-        
-        string mux_num = to_string(R);
-        
-        // Create a mux with name MuxR, n inputs, width w and logical register inputs.
-        muxes.emplace_back("RegMux" + mux_num, n, width, logical_regs);
-        
-    }
-    
-    return muxes;
-}
-
-vector<VHDLReg> generateVHDLRegs(vec_mat& clickset, int width, vector<Reg>& E){
-    // Create vector of registers to return
-    vector<VHDLReg> phys_regs;
-    
-    // Generate a new physical register for each clickset
-    for (int R = 0; R < clickset.size(); R++){
-        
-        vector<Reg*> logical_regs;
-        for (auto idx : clickset[R]) {
-            logical_regs.push_back(&(E[idx]));
-        }
-        
-        string reg_num = to_string(R);
-        
-        // Create a register with name RegR, width w and list of attached logical registers.
-        phys_regs.emplace_back("Reg" + reg_num, width, logical_regs);
-    }
-    
-    return phys_regs;
-}
-
-void bindVHDLRegMux(vector<Mux<VHDLReg>>& REGMuxes, vector<VHDLReg>& phys_reg){
-    for(int r = 0; r < REGMuxes.size(); r++){
-        phys_reg[r].input_mux = &REGMuxes[r];
-        REGMuxes[r].phys = &(phys_reg[r]);
-    }
 }
 
 
@@ -367,7 +254,8 @@ void printMuxes(vector<Mux<M>> muxes){
         for(int j = 0; j < muxes[i].num_inputs; j++){
             cout << (muxes[i].log_in[j])->name << " ";
         }
-        cout << "\n";
+        cout << "Points to: " << muxes[i].phys->name;
+        cout << endl;
     }
 }
 

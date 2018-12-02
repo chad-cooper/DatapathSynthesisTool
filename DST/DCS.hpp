@@ -41,8 +41,6 @@ public:
     int lifespan;
     
     // States
-    bool isWriting = false;
-    bool isReading = false;
     bool dataValid = false;
     
     void setLifespan(){lifespan = lifetime[1] - lifetime[0];}
@@ -161,7 +159,6 @@ public:
     void printEdges() {for(auto e: E) {cout << e << endl << endl;}}
 };
 
-//TODO: Make class template to point to either physical FU or physical register
 template <class P>
 class Mux {
 public:
@@ -185,8 +182,21 @@ public:
         width = bit_width;
         log_in = inputs;
     }
+    
+    
+    friend ostream& operator<<(ostream& os, const Mux<P>& mux){
+        os << "Name: " << mux.name << endl << mux.num_inputs << " inputs: ";
+        for(const auto& in : mux.log_in){os << in->name << " ";}
+        os << endl << "Width: " << mux.width << endl
+        << "Input of: " << mux.phys->name;
+        
+        return os;
+    }
+    
+    
 };
-
+//template <typename P>
+//ostream& operator<<(ostream& os, const Mux<P>& mux);
 
 class VHDLReg {
 public:
@@ -206,9 +216,11 @@ public:
     // The logical registers are the edges in the audi graph ( G.E )
     vector<Reg*> boundRegs;
     
-    vector<Reg*> log_out;
+    friend ostream& operator<<(ostream& os, const VHDLReg& reg);
     
 };
+
+ostream& operator<<(ostream& os, const VHDLReg& reg);
 
 
 class VHDLFU {
@@ -233,7 +245,7 @@ public:
     array<vector<Reg*>, 2> logical_inputs;
     array<Mux<VHDLFU>*, 2> input_muxes;
     
-    Mux<VHDLReg>* output_mux;
+    vector<Mux<VHDLReg>*> output_muxes;
     
     vector<Reg*> log_out;
     
@@ -247,13 +259,14 @@ public:
     }
     
     
+    friend ostream& operator<<(ostream& os, const VHDLFU& FU);
+    
 };
 
-//MARK: Aux and helper functions
-// Return pointer to X based on X.name
-template <typename X>
-X* getXByName(vector<X>&, string&);
+ostream& operator<<(ostream& os, const VHDLFU& FU);
 
+
+//MARK: Graph manipulation functions
 ADUIGraph readAUDI(string, bool);
 
 vector<int> LIST_L(ADUIGraph&, array<int, 4>&);
@@ -262,23 +275,18 @@ void assignStartTimes(ADUIGraph&, vector<int>&);
 
 void assignLifetime(ADUIGraph&);
 
+//MARK: Print functions
 void printRegLifetimes(vector<Reg>&);
-
-//MARK: Generate and bind muxes
-vector<vector<Mux<VHDLFU>>> generateFUMux(vec_mat& FUsForType, Op::op_type type, int width, int num_inputs = 2);
-
-vector<VHDLFU> generateVHDLFUs(vector<Op>& V, vec_mat& FUsForType, Op::op_type type, int width, int num_inputs= 2);
-
-vector<Mux<VHDLReg>> generateREGMux(vec_mat&, int, vector<Reg>&);
-
-vector<VHDLReg> generateVHDLRegs(vec_mat& clickset, int width, vector<Reg>& E);
-
-vector<VHDLFU> bindVHDLFUMux(vector<vector<vector<Mux<VHDLFU>>>>& FUMuxes, vector<vector<VHDLFU>>& FUs);
-
-void bindVHDLRegMux(vector<Mux<VHDLReg>>& REGMuxes, vector<VHDLReg>& phys_reg);
 
 template <typename M>
 void printMuxes(vector<Mux<M>>);
+
+
+
+//MARK: Aux and helper functions
+// Return pointer to X based on X.name
+template <typename X>
+X* getXByName(vector<X>&, string&);
 
 vector<Op*> subsetOpsByType(vector<Op>&, Op::op_type);
 

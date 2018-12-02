@@ -44,14 +44,14 @@ int main(int argc, const char * argv[]) {
     
     // Allocate and bind functional units
     vector<Op> res_type;
-    vector<vec_mat> FUsByType;
+    vector<vec_mat> FUCliquesByType;
     for (int i = 0; i < NUM_RES_TYPES; i++){
         // Clear mat
         res_type.clear();
         
         for(Op res : audi.V) {if (res.type == i){res_type.push_back(res);}}
         
-        FUsByType.push_back(allocateAndBind(res_type, int(res_type.size())));
+        FUCliquesByType.push_back(allocateAndBind(res_type, int(res_type.size())));
     }
     
     string type;
@@ -71,7 +71,7 @@ int main(int argc, const char * argv[]) {
                 break;
         }
         cout << "\n\nCliques for " << type << "...\n\n";
-        printMat(FUsByType[i]);
+        printMat(FUCliquesByType[i]);
         
     }
     
@@ -84,23 +84,51 @@ int main(int argc, const char * argv[]) {
     
     printRegLifetimes(audi.E);
     
-    vector<vector<vector<Mux<VHDLFU>>>> FUMuxes;
-    vector<vector<VHDLFU>> FUs;
+    vector<vector<vector<Mux<VHDLFU>>>> FUMuxesByType;
+    vector<vector<VHDLFU>> FUsByType;
     for(int i = 0; i < NUM_RES_TYPES; i++){
-        FUMuxes.push_back(generateFUMux(FUsByType[i], Op::op_type(i), audi.bit_width));
+        FUMuxesByType.push_back(generateFUMux(FUCliquesByType[i], Op::op_type(i), audi.bit_width));
         
-        FUs.push_back(generateVHDLFUs(audi.V, FUsByType[i], Op::op_type(i), audi.bit_width));
+        FUsByType.push_back(generateVHDLFUs(audi.V, FUCliquesByType[i], Op::op_type(i), audi.bit_width));
     }
-    
     
     vector<Mux<VHDLReg>> REGMuxes = generateREGMux(reg_cliques, audi.bit_width, audi.E);
     vector<VHDLReg> RegList = generateVHDLRegs(reg_cliques, audi.bit_width, audi.E);
     
-    printMuxes(REGMuxes);
+    vector<Mux<VHDLFU>> FUMuxes = byTypeToList(FUMuxesByType);
     
-    vector<VHDLFU> FUList = bindVHDLFUMux(FUMuxes, FUs);
+    vector<VHDLFU> FUList = byTypeToList(FUsByType);
+    
+    bindVHDLFUMux(FUMuxes, FUList);
     
     bindVHDLRegMux(REGMuxes, RegList);
+    
+    linkLogicalOut(FUList, REGMuxes);
+    
+    
+    cout << "\n\nFU MUXES...\n\n";
+    for(auto mux : FUMuxes){
+        cout << mux << endl << endl;
+    }
+    
+    cout << "\n\nReg MUXES...\n\n";
+    
+    for(const auto& mux : REGMuxes){
+        cout << mux << endl << endl;
+    }
+    
+    cout << "\n\nFunctional Units\n\n";
+    
+    for(const auto& FU : FUList ){
+        cout << FU << endl << endl;
+    }
+    
+    
+        cout << "\n\nRegister Units\n\n";
+    for(const auto& R : RegList ){
+        cout << R << endl << endl;
+    }
+    
     
     
     return 0;

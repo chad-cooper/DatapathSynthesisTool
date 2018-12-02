@@ -69,13 +69,13 @@
 			isa = PBXGroup;
 			children = (
 				63AD1B7621AE2C6A00CE030B /* main.cpp */,
-				63FBE1E221B0F8E30057655B /* VHDL_Gen.cpp */,
-				63FBE1E321B0F8E30057655B /* VHDL_Gen.hpp */,
 				63AD1B7E21AE2C8600CE030B /* DCS.hpp */,
 				63AD1B7D21AE2C8600CE030B /* DCS.cpp */,
 				632FB9AF21AF001B00EEEABF /* allocate_and_bind.hpp */,
 				632FB9AE21AF001B00EEEABF /* allocate_and_bind.cpp */,
 				63251F4E21B02A3300D25FDD /* clique_partition.h */,
+				63FBE1E221B0F8E30057655B /* VHDL_Gen.cpp */,
+				63FBE1E321B0F8E30057655B /* VHDL_Gen.hpp */,
 			);
 			path = DST;
 			sourceTree = "<group>";
