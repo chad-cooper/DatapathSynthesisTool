@@ -217,22 +217,35 @@ public:
     string name;
     int width;
     
-    VHDLFU(vector<Op*> bound_ops) {
-        boundOps = bound_ops;
+    VHDLFU(string fu_name, int bit_width, vector<Op*> bound){
+        name = fu_name;
+        width = bit_width;
+        boundOps = bound;
         
-        //TODO: fill in1 and in2
+        bindOperations(boundOps);
+        
     }
     
-    // Pointer to logical operations that ir bound to this physical functional unit.
+    // Pointer to logical operations that are bound to this physical functional unit.
     // This logical operations are the audi graph vertices ( G.V )
     vector<Op*> boundOps;
     
     array<vector<Reg*>, 2> logical_inputs;
-//    array<Mux<VHDLFU>*, 2> input_muxes;
+    array<Mux<VHDLFU>*, 2> input_muxes;
     
     Mux<VHDLReg*> output_mux;
     
     vector<Reg*> log_out;
+    
+    void bindOperations(vector<Op*> bound_ops){
+        
+        for (const auto& op : bound_ops){
+            logical_inputs[0].push_back(op->input_reg[0]);
+            logical_inputs[1].push_back(op->input_reg[1]);
+            log_out.push_back(op->output_reg);
+        }
+    }
+    
     
 };
 
@@ -254,7 +267,7 @@ void printRegLifetimes(vector<Reg>&);
 //MARK: Generate and bind muxes
 vector<vector<Mux<VHDLFU>>> generateFUMux(vec_mat& FUsForType, Op::op_type type, int width, int num_inputs = 2);
 
-//vector<VHDLFU> generateVHDLFUs(vec_mat& FUsForType, int width, int num_inputs= 2);
+vector<VHDLFU> generateVHDLFUs(vector<Op>& V, vec_mat& FUsForType, Op::op_type type, int width, int num_inputs= 2);
 
 vector<Mux<VHDLReg>> generateREGMux(vec_mat&, int, vector<Reg>&);
 

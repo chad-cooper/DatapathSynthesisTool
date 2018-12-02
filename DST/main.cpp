@@ -87,12 +87,15 @@ int main(int argc, const char * argv[]) {
     vector<vector<vector<Mux<VHDLFU>>>> FUMuxes;
     for(int i = 0; i < NUM_RES_TYPES; i++){
         FUMuxes.push_back(generateFUMux(FUsByType[i], Op::op_type(i), audi.bit_width));
+        
+        generateVHDLFUs(audi.V, FUsByType[i], Op::op_type(i), audi.bit_width);
     }
     
     
     vector<Mux<VHDLReg>> REGMuxes = generateREGMux(reg_cliques, audi.bit_width, audi.E);
     
     printMuxes(REGMuxes);
+    
     
     
     return 0;

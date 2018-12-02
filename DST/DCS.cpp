@@ -248,15 +248,25 @@ vector<vector<Mux<VHDLFU>>> generateFUMux(vec_mat& FUsForType, Op::op_type type,
     return muxes_for_type;
 }
 
-vector<VHDLFU> generateVHDLFUs(vec_mat& FUsForType, int width, int num_inputs){
+vector<VHDLFU> generateVHDLFUs(vector<Op>& V, vec_mat& FUsForType, Op::op_type type, int width, int num_inputs){
 
     vector<VHDLFU> phys_FU;
 
-    // For all the functional units of the current type
+    vector<Op*> ops_of_this_type = subsetOpsByType(V, type);
+    
+    // Create a physical function unit for each clickset for this operation
     for (int i = 0; i < FUsForType.size(); i++){
-
+        string FUname = opTypeString(type) + to_string(i);
+        
+        vector<Op*> bound_ops;
+        
+        for(auto idx : FUsForType[i]){
+            bound_ops.push_back(ops_of_this_type[idx]);
+        }
+        
+        phys_FU.emplace_back(FUname, width, bound_ops);
+        
     }
-
     return phys_FU;
 }
 
