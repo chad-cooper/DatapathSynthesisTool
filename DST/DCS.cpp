@@ -217,58 +217,133 @@ X* getXByName(vector<X>& x, string& s){
     return nullptr;
 }
 
-vector<vector<Mux>> generateFUMux(vec_mat& FUsForType, int width, int num_inputs) {
-    vector<vector<Mux>> muxes;
+vector<vector<Mux<VHDLFU>>> generateFUMux(vec_mat& FUsForType, Op::op_type type, int width, int num_inputs) {
+    // Number of inputs defaults to two.
+    
+    // There can be several physical functional units for each logical operation type.
+    // We need muxes that determine the data that are fed into the physical FUs.
+    vector<vector<Mux<VHDLFU>>> muxes_for_type;
     
     int n = 0;
+    
+    // Create a new pair of muxes for each physical FU in this clickset
     for (int i = 0; i < FUsForType.size(); i++) {
+        string FUname = opTypeString(type) + to_string(i);
+        
         // n is the number of operations bound to this FU
         n = int(FUsForType[i].size());
         
-        vector<Mux> FUMux;
-        muxes.push_back(FUMux);
+        vector<Mux<VHDLFU>> FUMux;
         
+        muxes_for_type.push_back(FUMux);
+        
+        // Create a mux with n inputs for both/each inputs into the funcitonal unit
         for(int j = 0; j < num_inputs; j++){
-            muxes[i].emplace_back(n, width);
+            
+            muxes_for_type[i].emplace_back(FUname + "_in"+to_string(j+1),n, width);
             
         }
     }
     
-    return muxes;
+    return muxes_for_type;
 }
 
-vector<Mux> generateREGMux(vec_mat& clickset, int width, vector<Reg>& E){
-    vector<Mux> muxes;
+vector<VHDLFU> generateVHDLFUs(vec_mat& FUsForType, int width, int num_inputs){
+
+    vector<VHDLFU> phys_FU;
+
+    // For all the functional units of the current type
+    for (int i = 0; i < FUsForType.size(); i++){
+
+    }
+
+    return phys_FU;
+}
+
+vector<Mux<VHDLReg>> generateREGMux(vec_mat& clickset, int width, vector<Reg>& E){
+    // Create vector of muxes to return
+    vector<Mux<VHDLReg>> muxes;
     
     int n = 0;
-    int index = 0;
-    for(auto R : clickset){
-        n = int(R.size());
+    
+    // Generate a new mux for each clickset
+    for (int R = 0; R < clickset.size(); R++){
         
-        muxes.emplace_back(n, width);
+        // n is the number of inputs
+        n = int(clickset[R].size());
         
-        vector<Reg*> temp;
-        for(auto idx : R){
-            temp.push_back(&(E[idx]));
+        vector<Reg*> logical_regs;
+        for (auto idx : clickset[R]) {
+            logical_regs.push_back(&(E[idx]));
         }
-        (muxes.end()-1)->logIn = temp;
-        string tempI = to_string(index);
-        (muxes.end()-1)->name = "Mux" + tempI;
-        index++;
+        
+        string mux_num = to_string(R);
+        
+        // Create a mux with name MuxR, n inputs, width w and logical register inputs.
+        muxes.emplace_back("Mux" + mux_num, n, width, logical_regs);
+        
     }
     
     return muxes;
 }
 
-void printMuxes(vector<Mux> muxes){
+vector<VHDLReg> generateVHDLRegs(vec_mat& clickset, int width, vector<Reg>& E){
+    // Create vector of registers to return
+    vector<VHDLReg> phys_regs;
+    
+    // Generate a new physical register for each clickset
+    for (int R = 0; R < clickset.size(); R++){
+        
+        vector<Reg*> logical_regs;
+        for (auto idx : clickset[R]) {
+            logical_regs.push_back(&(E[idx]));
+        }
+        
+        string reg_num = to_string(R);
+        
+        // Create a register with name RegR, width w and list of attached logical registers.
+        phys_regs.emplace_back("Reg" + reg_num, width, logical_regs);
+    }
+    
+    return phys_regs;
+}
+
+
+
+
+
+template void printMuxes<VHDLFU>(vector<Mux<VHDLFU>> muxes);
+
+template void printMuxes<VHDLReg>(vector<Mux<VHDLReg>> muxes);
+
+template <class M>
+void printMuxes(vector<Mux<M>> muxes){
     
     cout << "\n\t\tMuxes\n";
     
     for(int i = 0; i < muxes.size(); i ++){
         cout << muxes[i].name << ": ";
         for(int j = 0; j < muxes[i].num_inputs; j++){
-            cout << (muxes[i].logIn[j])->name << " ";
+            cout << (muxes[i].log_in[j])->name << " ";
         }
         cout << "\n";
     }
+}
+
+vector<Op*> subsetOpsByType(vector<Op>& ops, Op::op_type type){
+    vector<Op*> subset;
+    
+    for(auto op = ops.begin(); op != ops.end(); op++){
+        if (op->type == type){
+            subset.push_back(&(*op));
+        }
+    }
+    
+    return subset;
+}
+
+string opTypeString(Op::op_type type){
+    string str[] = {"ADD", "SUB", "MULT", "DIV"};
+    
+    return str[type];
 }

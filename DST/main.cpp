@@ -84,16 +84,15 @@ int main(int argc, const char * argv[]) {
     
     printRegLifetimes(audi.E);
     
-    vector<vector<vector<Mux>>> FUMuxes;
+    vector<vector<vector<Mux<VHDLFU>>>> FUMuxes;
     for(int i = 0; i < NUM_RES_TYPES; i++){
-        FUMuxes.push_back(generateFUMux(FUsByType[i], audi.bit_width));
+        FUMuxes.push_back(generateFUMux(FUsByType[i], Op::op_type(i), audi.bit_width));
     }
     
     
-    vector<Mux> REGMuxes = generateREGMux(reg_cliques, audi.bit_width, audi.E);
+    vector<Mux<VHDLReg>> REGMuxes = generateREGMux(reg_cliques, audi.bit_width, audi.E);
     
     printMuxes(REGMuxes);
-    
     
     
     return 0;

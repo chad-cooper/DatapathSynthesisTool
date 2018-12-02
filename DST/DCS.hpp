@@ -162,53 +162,79 @@ public:
 };
 
 //TODO: Make class template to point to either physical FU or physical register
-//template <class P, class L>
+template <class P>
 class Mux {
 public:
     string name;
     int width;
     int num_inputs;
-    vector<Reg*> logIn;
-    Reg* pOut;
+    vector<Reg*> log_in;
+    P* phys;
     
-    Mux(int n_inputs, int bit_width){
+    Mux(){};
+    
+    Mux(string mux_name, int n_inputs, int bit_width){
+        name = mux_name;
         num_inputs = n_inputs;
         width = bit_width;
     }
+    
+    Mux(string mux_name, int n_inputs, int bit_width, vector<Reg*> inputs){
+        name = mux_name;
+        num_inputs = n_inputs;
+        width = bit_width;
+        log_in = inputs;
+    }
 };
 
-//TODO: Make VHDLFU class
-/*
- class VHDLFU {
- public:
- 
- string name;
- int width;
- 
- // Pointer to functional unit clique that is bound to this physical functional unit.
- // The FU clique in turn is actually a list of indices for the logical functions
- // that are the audi graph vertices ( G.V ).
- vector<int>* FU_clique;
- 
- };
- */
 
-//TODO: Make VHDLReg class
-/*
- class VHDLReg {
- public:
- 
- string name;
- int width;
- 
- // Pointer to register clique that is bound to this physical register.
- // The register clique in turn is actually a list of indices for the logical
- // registers that are the edges in the audi graph ( G.E ).
- vector<int>* reg_clique;
- 
- };
- */
+class VHDLReg {
+public:
+    
+    VHDLReg(string reg_name, int bit_width, vector<Reg*> bound){
+        name = reg_name;
+        width = bit_width;
+        boundRegs = bound;
+    }
+    
+    string name;
+    int width;
+    
+    Mux<VHDLReg> input_mux;
+    
+    // Pointer to logical registers bound to this physical register.
+    // The logical registers are the edges in the audi graph ( G.E )
+    vector<Reg*> boundRegs;
+    
+    vector<Reg*> log_out;
+    
+};
 
+
+class VHDLFU {
+public:
+    
+    string name;
+    int width;
+    
+    VHDLFU(vector<Op*> bound_ops) {
+        boundOps = bound_ops;
+        
+        //TODO: fill in1 and in2
+    }
+    
+    // Pointer to logical operations that ir bound to this physical functional unit.
+    // This logical operations are the audi graph vertices ( G.V )
+    vector<Op*> boundOps;
+    
+    array<vector<Reg*>, 2> logical_inputs;
+//    array<Mux<VHDLFU>*, 2> input_muxes;
+    
+    Mux<VHDLReg*> output_mux;
+    
+    vector<Reg*> log_out;
+    
+};
 
 //MARK: Aux and helper functions
 // Return pointer to X based on X.name
@@ -225,10 +251,20 @@ void assignLifetime(ADUIGraph&);
 
 void printRegLifetimes(vector<Reg>&);
 
-vector<vector<Mux>> generateFUMux(vec_mat& FUsForType, int width, int num_inputs = 2);
+//MARK: Generate and bind muxes
+vector<vector<Mux<VHDLFU>>> generateFUMux(vec_mat& FUsForType, Op::op_type type, int width, int num_inputs = 2);
 
-vector<Mux> generateREGMux(vec_mat&, int, vector<Reg>&);
+//vector<VHDLFU> generateVHDLFUs(vec_mat& FUsForType, int width, int num_inputs= 2);
 
-void printMuxes(vector<Mux>);
+vector<Mux<VHDLReg>> generateREGMux(vec_mat&, int, vector<Reg>&);
+
+vector<VHDLReg> generateVHDLRegs(vec_mat& clickset, int width, vector<Reg>& E);
+
+template <typename M>
+void printMuxes(vector<Mux<M>>);
+
+vector<Op*> subsetOpsByType(vector<Op>&, Op::op_type);
+
+string opTypeString(Op::op_type);
 
 #endif /* DCS_hpp */
