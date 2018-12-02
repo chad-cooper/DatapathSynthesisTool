@@ -200,7 +200,7 @@ public:
     string name;
     int width;
     
-    Mux<VHDLReg> input_mux;
+    Mux<VHDLReg>* input_mux;
     
     // Pointer to logical registers bound to this physical register.
     // The logical registers are the edges in the audi graph ( G.E )
@@ -233,7 +233,7 @@ public:
     array<vector<Reg*>, 2> logical_inputs;
     array<Mux<VHDLFU>*, 2> input_muxes;
     
-    Mux<VHDLReg*> output_mux;
+    Mux<VHDLReg>* output_mux;
     
     vector<Reg*> log_out;
     
@@ -272,6 +272,10 @@ vector<VHDLFU> generateVHDLFUs(vector<Op>& V, vec_mat& FUsForType, Op::op_type t
 vector<Mux<VHDLReg>> generateREGMux(vec_mat&, int, vector<Reg>&);
 
 vector<VHDLReg> generateVHDLRegs(vec_mat& clickset, int width, vector<Reg>& E);
+
+vector<VHDLFU> bindVHDLFUMux(vector<vector<vector<Mux<VHDLFU>>>>& FUMuxes, vector<vector<VHDLFU>>& FUs);
+
+void bindVHDLRegMux(vector<Mux<VHDLReg>>& REGMuxes, vector<VHDLReg>& phys_reg);
 
 template <typename M>
 void printMuxes(vector<Mux<M>>);

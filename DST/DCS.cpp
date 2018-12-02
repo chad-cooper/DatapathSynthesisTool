@@ -270,6 +270,33 @@ vector<VHDLFU> generateVHDLFUs(vector<Op>& V, vec_mat& FUsForType, Op::op_type t
     return phys_FU;
 }
 
+vector<VHDLFU> bindVHDLFUMux(vector<vector<vector<Mux<VHDLFU>>>>& FUMuxes, vector<vector<VHDLFU>>& FUs){
+    // bindVHDLFUMux binds the multiplexers to functional units.
+    
+    vector<VHDLFU> boundFUmux;
+    
+    // For each operation type
+    for(int t = 0; t < FUMuxes.size(); t++){
+        // for each functional unit of this type
+        for(int f = 0; f < FUMuxes[t].size(); f++){
+            
+            FUMuxes[t][f][0].log_in = FUs[t][f].logical_inputs[0];
+            FUMuxes[t][f][1].log_in = FUs[t][f].logical_inputs[1];
+            
+            FUs[t][f].input_muxes[0] = &FUMuxes[t][f][0];
+            FUs[t][f].input_muxes[1] = &FUMuxes[t][f][1];
+            
+            boundFUmux.push_back(FUs[t][f]);
+            
+            FUMuxes[t][f][0].phys = &(*(boundFUmux.end()-1));
+            FUMuxes[t][f][1].phys = &(*(boundFUmux.end()-1));
+            
+        }
+    }
+    
+    return boundFUmux;
+}
+
 vector<Mux<VHDLReg>> generateREGMux(vec_mat& clickset, int width, vector<Reg>& E){
     // Create vector of muxes to return
     vector<Mux<VHDLReg>> muxes;
@@ -290,7 +317,7 @@ vector<Mux<VHDLReg>> generateREGMux(vec_mat& clickset, int width, vector<Reg>& E
         string mux_num = to_string(R);
         
         // Create a mux with name MuxR, n inputs, width w and logical register inputs.
-        muxes.emplace_back("Mux" + mux_num, n, width, logical_regs);
+        muxes.emplace_back("RegMux" + mux_num, n, width, logical_regs);
         
     }
     
@@ -318,8 +345,12 @@ vector<VHDLReg> generateVHDLRegs(vec_mat& clickset, int width, vector<Reg>& E){
     return phys_regs;
 }
 
-
-
+void bindVHDLRegMux(vector<Mux<VHDLReg>>& REGMuxes, vector<VHDLReg>& phys_reg){
+    for(int r = 0; r < REGMuxes.size(); r++){
+        phys_reg[r].input_mux = &REGMuxes[r];
+        REGMuxes[r].phys = &(phys_reg[r]);
+    }
+}
 
 
 template void printMuxes<VHDLFU>(vector<Mux<VHDLFU>> muxes);
