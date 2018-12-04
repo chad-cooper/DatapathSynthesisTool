@@ -88,48 +88,86 @@ void generateDataPath(string& filename, vector<VHDLFU>& FUs, vector<VHDLReg>& RU
     }
 
     cout  << "\n--BEGINNING OF MUXES FOR FUNCTIONAL UNITS\n\n";
-    
-    for(const auto& FUMux : FUMuxes) {
-        sel = ceil(log2(FUMux.num_inputs));
+
+    for(int i = 0; i < FUMuxes.size(); i++){
+        sel = ceil(log2(FUMuxes[i].num_inputs));
         if(sel < 1) sel = 1;
         
-        cout  << "\t" << FUMux.name << ": entity work.c_multiplexer"
-        << "\n\tgeneric map(width => " << FUMux.width << ", no_of_inputs => "<< FUMux.num_inputs
+        cout  << "\t" << FUMuxes[i].name << ": entity work.c_multiplexer"
+        << "\n\tgeneric map(width => " << FUMuxes[i].width << ", no_of_inputs => "<< FUMuxes[i].num_inputs
         << ", select_size => " << sel << ")\n" << "\tport map (";
         
-        for(int i = 0; i < FUMux.num_inputs; i++){
-            cout << "input(" << i*FUMux.width + FUMux.width - 1 << " downto " << i*FUMux.width<< ") => " << "[signal]" << ", ";
+        // Link internal registers here
+        for(int j = 0; j < FUMuxes[i].num_inputs; j++){
+            string input_signal_name;
+            if (FUMuxes[i].log_in[j]->type == Reg::intermediate){
+                
+                // Find FU with this intermediate register as ouptut
+                for(const auto& FU : FUs){ // for each FU,
+                    for (const auto& FU_output : FU.log_out){ // check if its output
+                            if (FU_output == FUMuxes[i].log_in[j]){ // is an input to the current mux
+                                input_signal_name = FU.name + "_OUT";
+                        }
+                    }
+                }
+            } else {
+                input_signal_name = FUMuxes[i].log_in[j]->name;
+            }
+            
+            cout << "input(" << j*FUMuxes[i].width + FUMuxes[i].width - 1 << " downto " << j*FUMuxes[i].width
+            << ") => " << input_signal_name << ", ";
         }
-        cout << "output";
         
+        cout << "mux_select => " << FUMuxes[i].name << "_SEL, ";
         
-        cout << endl << endl;
+        string output_signal_name = (getXByName(FUs, FUMuxes[i].phys_name))->input_muxes[i%2]->name;
+        
+        // Convert output signal name to uppercase to match signal name
+        transform(output_signal_name.begin(), output_signal_name.end(), output_signal_name.begin(), ::toupper);
+        
+        cout << "output <= " << output_signal_name << ");\n\n"; //FUMuxes[i].phys->input_muxes[i%2]->name;
     }
     
-//    for(int i = 0; i < MUXs.size(); i++){
-//        if(MUXs[i].type != REG){
-//            cout  << "\t" << MUXs[i].nameA << "_MUX_A : entity work.c_multiplexer" << "\n\tgeneric map(width => " << MUXs[i].width << ", no_of_inputs => "<<
-//            MUXs[i].MUX_inA.size() << ", select_size => " << get_size(MUXs[i].MUX_inA.size())  << ")\n" << "\tport map ("
-//            << muxSplitInput(MUXs[i].width, MUXs[i].MUX_inA.size(), MUXs[i].MUX_inA, MUXs, this -> regs)
-//            << "mux_select => "<< MUXs[i].nameA << "_MUX_A_SEL, output => " << MUXs[i].nameA << "_A_IN);\n\n";
-//
-//            cout  << "\t" << MUXs[i].nameB << "_MUX_B : entity work.c_multiplexer" << "\n\tgeneric map(width => " << MUXs[i].width << ", no_of_inputs => "<<
-//            MUXs[i].MUX_inB.size() << ", select_size => " << get_size(MUXs[i].MUX_inB.size())  << ")\n" << "\tport map ("
-//            << muxSplitInput(MUXs[i].width, MUXs[i].MUX_inB.size(), MUXs[i].MUX_inB, MUXs, this -> regs)
-//            << "mux_select => "<< MUXs[i].nameA << "_MUX_B_SEL, output => " << MUXs[i].nameB << "_B_IN);\n\n";
-//        }
-//    }
-//    cout  << "\n--BEGINNING OF MUXES FOR REGISTERS\n\n";
-//    for(int i = 0; i < MUXs.size(); i++){
-//        if(MUXs[i].type == REG){
-//            cout  << "\t" << MUXs[i].nameA << "_MUX : entity work.c_multiplexer" << "\n\tgeneric map(width => " << MUXs[i].width << ", no_of_inputs => "<<
-//            MUXs[i].MUX_inA.size() << ", select_size => " << get_size(MUXs[i].MUX_inA.size())  << ")\n" << "\tport map ("
-//            << muxSplitInput(MUXs[i].width, MUXs[i].MUX_inA.size(), MUXs[i].MUX_inA, MUXs, this->regs)
-//            << "mux_select => "<< MUXs[i].nameA << "_MUX_SEL, output => " << MUXs[i].nameA << "_IN);\n\n";
-//        }
-//    }
-//
-//    cout  << "end " << filename << "_arch;";
+
+    cout  << "\n--BEGINNING OF MUXES FOR REGISTERS\n\n";
+    
+    for(int i = 0; i < RUMuxes.size(); i++){
+        sel = ceil(log2(RUMuxes[i].num_inputs));
+        if(sel < 1) sel = 1;
+        
+        cout  << "\t" << RUMuxes[i].name << ": entity work.c_multiplexer"
+        << "\n\tgeneric map(width => " << RUMuxes[i].width << ", no_of_inputs => "<< RUMuxes[i].num_inputs
+        << ", select_size => " << sel << ")\n" << "\tport map (";
+        
+        // Link internal registers here
+        for(int j = 0; j < RUMuxes[i].num_inputs; j++){
+            string input_signal_name;
+            if (RUMuxes[i].log_in[j]->type == Reg::intermediate){
+                
+                // Find FU with this intermediate register as ouptut
+                for(const auto& FU : FUs){ // for each FU,
+                    for (const auto& FU_output : FU.log_out){ // check if its output
+                        if (FU_output == RUMuxes[i].log_in[j]){ // is an input to the current mux
+                            input_signal_name = FU.name + "_OUT";
+                        }
+                    }
+                }
+            } else {
+                input_signal_name = RUMuxes[i].log_in[j]->name;
+            }
+            
+            cout << "input(" << j*RUMuxes[i].width + RUMuxes[i].width - 1 << " downto " << j*RUMuxes[i].width
+            << ") => " << input_signal_name << ", ";
+        }
+        
+        cout << "mux_select => " << RUMuxes[i].name << "_SEL, ";
+        
+        string output_signal_name = RUs[i].name + "_IN";
+
+        cout << "output <= " << output_signal_name << ");\n\n"; //FUMuxes[i].phys->input_muxes[i%2]->name;
+    }
+    
+    cout  << "end " << filename << "_arch;";
     
     
     

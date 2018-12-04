@@ -231,6 +231,10 @@ ostream& operator<<(ostream& os, const VHDLFU& FU){
 
 
 //MARK: Aux and helper functions
+
+template VHDLFU* getXByName<VHDLFU>(vector<VHDLFU>& x, string& s);
+template VHDLReg* getXByName<VHDLReg>(vector<VHDLReg>& x, string& s);
+
 template <typename X>
 X* getXByName(vector<X>& x, string& s){
     for(auto it = x.begin(); it != x.end(); it++){
