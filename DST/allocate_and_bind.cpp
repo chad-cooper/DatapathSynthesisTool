@@ -168,6 +168,7 @@ void bindVHDLFUMux(vector<Mux>& FUMuxes, vector<VHDLFU>& FUs){
         
         // Link logical inputs of functional unit to correct mux
         FUMuxes[i].log_in = FUs[i/2].logical_inputs[i%2];
+        FUMuxes[i].phys_name = FUs[i/2].name;
 //        FUMuxes[i].phys = &FUs[i/2];
         
         // Link the functional unit mux to the input muxes of a functional unit
@@ -255,6 +256,7 @@ vector<VHDLReg> generateVHDLRegs(vec_mat& clickset, int width, vector<Reg>& E){
 void bindVHDLRegMux(vector<Mux>& REGMuxes, vector<VHDLReg>& phys_reg){
     for(int r = 0; r < REGMuxes.size(); r++){
         phys_reg[r].input_mux = &REGMuxes[r];
+        REGMuxes[r].phys_name = phys_reg[r].name;
 //        REGMuxes[r].phys = &(phys_reg[r]);
     }
 }

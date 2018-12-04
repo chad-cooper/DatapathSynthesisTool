@@ -170,6 +170,8 @@ public:
     vector<Reg*> log_in;
     type type;
     
+    string phys_name;
+    
     Mux(){};
     
     Mux(string mux_name, int n_inputs, int bit_width){
