@@ -195,8 +195,6 @@ public:
     
     
 };
-//template <typename P>
-//ostream& operator<<(ostream& os, const Mux<P>& mux);
 
 class VHDLReg {
 public:
@@ -205,6 +203,7 @@ public:
         name = reg_name;
         width = bit_width;
         boundRegs = bound;
+        log_out = bound;
     }
     
     string name;
@@ -216,6 +215,8 @@ public:
     // The logical registers are the edges in the audi graph ( G.E )
     vector<Reg*> boundRegs;
     
+    vector<Reg*> log_out;
+    
     friend ostream& operator<<(ostream& os, const VHDLReg& reg);
     
 };
@@ -226,13 +227,18 @@ ostream& operator<<(ostream& os, const VHDLReg& reg);
 class VHDLFU {
 public:
     
+    
     string name;
     int width;
+    
+    Op::op_type type;
     
     VHDLFU(string fu_name, int bit_width, vector<Op*> bound){
         name = fu_name;
         width = bit_width;
         boundOps = bound;
+        
+        type = bound[0]->type;
         
         bindOperations(boundOps);
         

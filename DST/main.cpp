@@ -6,8 +6,8 @@
 //  Copyright © 2018 Chad Cooper. All rights reserved.
 //
 
-//#include "DCS.hpp"
-#include "allocate_and_bind.hpp"
+
+#include "VHDL_Gen.hpp"
 
 #define NUM_RES_TYPES 4
 
@@ -15,8 +15,9 @@ int main(int argc, const char * argv[]) {
     
     bool print = true;
     
+    string filename = "toyexample";
     
-    ADUIGraph audi = readAUDI("toyexample.aif", print);
+    ADUIGraph audi = readAUDI(filename + ".aif", print);
     
     array<int, NUM_RES_TYPES> available_resources = {2, 2, 2, 2};
     
@@ -128,8 +129,8 @@ int main(int argc, const char * argv[]) {
     for(const auto& R : RegList ){
         cout << R << endl << endl;
     }
-    
-    
+
+    generateDataPath(filename, FUList, RegList, audi.V, audi.E, FUMuxes, REGMuxes);
     
     return 0;
 }

@@ -222,7 +222,7 @@ vector<Mux<VHDLReg>> generateREGMux(vec_mat& clickset, int width, vector<Reg>& E
         string mux_num = to_string(R);
         
         // Create a mux with name MuxR, n inputs, width w and logical register inputs.
-        muxes.emplace_back("RegMux" + mux_num, n, width, logical_regs);
+        muxes.emplace_back("Reg" + mux_num + "Mux" , n, width, logical_regs);
         
     }
     
