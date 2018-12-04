@@ -159,14 +159,16 @@ public:
     void printEdges() {for(auto e: E) {cout << e << endl << endl;}}
 };
 
-template <class P>
+//template <class P>
 class Mux {
 public:
+    enum type {FU, RU};
+    
     string name;
     int width;
     int num_inputs;
     vector<Reg*> log_in;
-    P* phys;
+    type type;
     
     Mux(){};
     
@@ -184,11 +186,10 @@ public:
     }
     
     
-    friend ostream& operator<<(ostream& os, const Mux<P>& mux){
+    friend ostream& operator<<(ostream& os, const Mux& mux){
         os << "Name: " << mux.name << endl << mux.num_inputs << " inputs: ";
         for(const auto& in : mux.log_in){os << in->name << " ";}
-        os << endl << "Width: " << mux.width << endl
-        << "Input of: " << mux.phys->name;
+        os << endl << "Width: " << mux.width << endl;
         
         return os;
     }
@@ -209,13 +210,15 @@ public:
     string name;
     int width;
     
-    Mux<VHDLReg>* input_mux;
+    Mux* input_mux;
     
     // Pointer to logical registers bound to this physical register.
     // The logical registers are the edges in the audi graph ( G.E )
     vector<Reg*> boundRegs;
     
     vector<Reg*> log_out;
+    
+    vector<Mux*> output_muxes;
     
     friend ostream& operator<<(ostream& os, const VHDLReg& reg);
     
@@ -249,9 +252,9 @@ public:
     vector<Op*> boundOps;
     
     array<vector<Reg*>, 2> logical_inputs;
-    array<Mux<VHDLFU>*, 2> input_muxes;
+    array<Mux*, 2> input_muxes;
     
-    vector<Mux<VHDLReg>*> output_muxes;
+    vector<Mux*> output_muxes;
     
     vector<Reg*> log_out;
     
@@ -284,8 +287,7 @@ void assignLifetime(ADUIGraph&);
 //MARK: Print functions
 void printRegLifetimes(vector<Reg>&);
 
-template <typename M>
-void printMuxes(vector<Mux<M>>);
+void printMuxes(vector<Mux>);
 
 
 

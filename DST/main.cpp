@@ -85,7 +85,7 @@ int main(int argc, const char * argv[]) {
     
     printRegLifetimes(audi.E);
     
-    vector<vector<vector<Mux<VHDLFU>>>> FUMuxesByType;
+    vector<vector<vector<Mux>>> FUMuxesByType;
     vector<vector<VHDLFU>> FUsByType;
     for(int i = 0; i < NUM_RES_TYPES; i++){
         FUMuxesByType.push_back(generateFUMux(FUCliquesByType[i], Op::op_type(i), audi.bit_width));
@@ -93,10 +93,10 @@ int main(int argc, const char * argv[]) {
         FUsByType.push_back(generateVHDLFUs(audi.V, FUCliquesByType[i], Op::op_type(i), audi.bit_width));
     }
     
-    vector<Mux<VHDLReg>> REGMuxes = generateREGMux(reg_cliques, audi.bit_width, audi.E);
+    vector<Mux> REGMuxes = generateREGMux(reg_cliques, audi.bit_width, audi.E);
     vector<VHDLReg> RegList = generateVHDLRegs(reg_cliques, audi.bit_width, audi.E);
     
-    vector<Mux<VHDLFU>> FUMuxes = byTypeToList(FUMuxesByType);
+    vector<Mux> FUMuxes = byTypeToList(FUMuxesByType);
     
     vector<VHDLFU> FUList = byTypeToList(FUsByType);
     
@@ -105,6 +105,8 @@ int main(int argc, const char * argv[]) {
     bindVHDLRegMux(REGMuxes, RegList);
     
     linkLogicalOut(FUList, REGMuxes);
+    
+    linkLogicalOut(RegList, FUMuxes);
     
     
     cout << "\n\nFU MUXES...\n\n";

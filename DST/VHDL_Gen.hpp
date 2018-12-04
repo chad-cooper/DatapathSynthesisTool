@@ -12,7 +12,7 @@
 #include "allocate_and_bind.hpp"
 
 // Generate the data path for the AUDI file
-void generateDataPath(string&, vector<VHDLFU>&, vector<VHDLReg>&, vector<Op>&, vector<Reg>&, vector<Mux<VHDLFU>>&, vector<Mux<VHDLReg>>&);
+void generateDataPath(string&, vector<VHDLFU>&, vector<VHDLReg>&, vector<Op>&, vector<Reg>&, vector<Mux>&, vector<Mux>&);
 
 void generateController(void);
 

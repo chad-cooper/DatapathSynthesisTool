@@ -9,7 +9,7 @@
 #include "VHDL_Gen.hpp"
 #include <cmath>
 
-void generateDataPath(string& filename, vector<VHDLFU>& FUs, vector<VHDLReg>& RUs, vector<Op>& LOp, vector<Reg>& LReg, vector<Mux<VHDLFU>>& FUMuxes, vector<Mux<VHDLReg>>& RUMuxes){
+void generateDataPath(string& filename, vector<VHDLFU>& FUs, vector<VHDLReg>& RUs, vector<Op>& LOp, vector<Reg>& LReg, vector<Mux>& FUMuxes, vector<Mux>& RUMuxes){
 //      A data path consists of three parts:
 //          (1) entity: primary inputs/outputs + reset, start & clock ports
 //          (2) component declaration: assign componenets from AUDI library
@@ -23,6 +23,7 @@ void generateDataPath(string& filename, vector<VHDLFU>& FUs, vector<VHDLReg>& RU
     cout << "entity datapath_" << filename << " is\n";
     cout << "port\n(\n";
     
+    // Assign inputs and outputs
     for(const auto& reg : LReg){
         
         string IO;
@@ -39,6 +40,7 @@ void generateDataPath(string& filename, vector<VHDLFU>& FUs, vector<VHDLReg>& RU
     
     int sel;
     
+    // Create select signals for multiplexors
     for(const auto& FUMux : FUMuxes ){
         sel = ceil(log2(FUMux.num_inputs));
         if(sel < 1) sel = 1;
@@ -54,8 +56,10 @@ void generateDataPath(string& filename, vector<VHDLFU>& FUs, vector<VHDLReg>& RU
     cout  << "\tclear : in std_logic;\n\tclock : in std_logic);\nend datapath_" << filename << ";\n";
     cout  << "\narchitecture " << filename << "_arch of datapath_" << filename << " is\n";
 
-    cout  << "\n--BEGINNING OF SIGNALS\n\n";
     
+    // Generate internal signals.
+    // These are the signals coming from and going to the multiplexors
+    cout  << "\n--BEGINNING OF SIGNALS\n\n";
 
     for(const auto& RU : RUs ){
         cout  << "\tsignal " << RU.name << "_IN" << " : std_logic_vector(" << RU.width - 1 << " downto 0);\n";
@@ -68,6 +72,7 @@ void generateDataPath(string& filename, vector<VHDLFU>& FUs, vector<VHDLReg>& RU
         cout  << "\tsignal " << FU.name << "_OUT" << " : std_logic_vector(" << FU.width - 1 << " downto 0);\n";
     }
 
+    // Instantiate functional units
     cout  << "\nbegin\n\n";
     cout  << "\n--BEGINNING OF FUNCTIONAL UNITS\n\n";
     for(const auto& FU : FUs){
@@ -92,10 +97,11 @@ void generateDataPath(string& filename, vector<VHDLFU>& FUs, vector<VHDLReg>& RU
         << "\n\tgeneric map(width => " << FUMux.width << ", no_of_inputs => "<< FUMux.num_inputs
         << ", select_size => " << sel << ")\n" << "\tport map (";
         
-        // Link internal registers here
         for(int i = 0; i < FUMux.num_inputs; i++){
-            cout << "input(" << i*FUMux.width + FUMux.width - 1 << " downto " << i*FUMux.width<< ") => " << FUMux.log_in[i]->name << ", ";
+            cout << "input(" << i*FUMux.width + FUMux.width - 1 << " downto " << i*FUMux.width<< ") => " << "[signal]" << ", ";
         }
+        cout << "output";
+        
         
         cout << endl << endl;
     }

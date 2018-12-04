@@ -106,12 +106,12 @@ vec_mat allocateAndBind(vector<A> vertices, int num_vertices){
 
 
 //MARK: Generate and bind muxes and physical VHDL units
-vector<vector<Mux<VHDLFU>>> generateFUMux(vec_mat& FUsForType, Op::op_type type, int width, int num_inputs) {
+vector<vector<Mux>> generateFUMux(vec_mat& FUsForType, Op::op_type type, int width, int num_inputs) {
     // Number of inputs defaults to two.
     
     // There can be several physical functional units for each logical operation type.
     // We need muxes that determine the data that are fed into the physical FUs.
-    vector<vector<Mux<VHDLFU>>> muxes_for_type;
+    vector<vector<Mux>> muxes_for_type;
     
     int n = 0;
     
@@ -122,7 +122,7 @@ vector<vector<Mux<VHDLFU>>> generateFUMux(vec_mat& FUsForType, Op::op_type type,
         // n is the number of operations bound to this FU
         n = int(FUsForType[i].size());
         
-        vector<Mux<VHDLFU>> FUMux;
+        vector<Mux> FUMux;
         
         muxes_for_type.push_back(FUMux);
         
@@ -130,6 +130,7 @@ vector<vector<Mux<VHDLFU>>> generateFUMux(vec_mat& FUsForType, Op::op_type type,
         for(int j = 0; j < num_inputs; j++){
             
             muxes_for_type[i].emplace_back(FUname + "_in"+to_string(j+1),n, width);
+            (muxes_for_type[i].end()-1)->type = Mux::FU;
             
         }
     }
@@ -159,7 +160,7 @@ vector<VHDLFU> generateVHDLFUs(vector<Op>& V, vec_mat& FUsForType, Op::op_type t
     return phys_FU;
 }
 
-void bindVHDLFUMux(vector<Mux<VHDLFU>>& FUMuxes, vector<VHDLFU>& FUs){
+void bindVHDLFUMux(vector<Mux>& FUMuxes, vector<VHDLFU>& FUs){
     // bindVHDLFUMux binds the multiplexers to functional units.
     
     // There are two muxes for every functional unit
@@ -167,7 +168,7 @@ void bindVHDLFUMux(vector<Mux<VHDLFU>>& FUMuxes, vector<VHDLFU>& FUs){
         
         // Link logical inputs of functional unit to correct mux
         FUMuxes[i].log_in = FUs[i/2].logical_inputs[i%2];
-        FUMuxes[i].phys = &FUs[i/2];
+//        FUMuxes[i].phys = &FUs[i/2];
         
         // Link the functional unit mux to the input muxes of a functional unit
         FUs[i/2].input_muxes[i%2] = &FUMuxes[i];
@@ -188,8 +189,8 @@ vector<VHDLFU> byTypeToList(vector<vector<VHDLFU>> FUsByType){
     return FUList;
 }
 
-vector<Mux<VHDLFU>> byTypeToList(vector<vector<vector<Mux<VHDLFU>>>> FUMuxesByType){
-    vector<Mux<VHDLFU>> FUMuxList;
+vector<Mux> byTypeToList(vector<vector<vector<Mux>>> FUMuxesByType){
+    vector<Mux> FUMuxList;
     
     for(const auto& FUMuxofType : FUMuxesByType){
         for(const auto& FUMuxPair : FUMuxofType){
@@ -202,9 +203,9 @@ vector<Mux<VHDLFU>> byTypeToList(vector<vector<vector<Mux<VHDLFU>>>> FUMuxesByTy
     return FUMuxList;
 }
 
-vector<Mux<VHDLReg>> generateREGMux(vec_mat& clickset, int width, vector<Reg>& E){
+vector<Mux> generateREGMux(vec_mat& clickset, int width, vector<Reg>& E){
     // Create vector of muxes to return
-    vector<Mux<VHDLReg>> muxes;
+    vector<Mux> muxes;
     
     int n = 0;
     
@@ -223,6 +224,7 @@ vector<Mux<VHDLReg>> generateREGMux(vec_mat& clickset, int width, vector<Reg>& E
         
         // Create a mux with name MuxR, n inputs, width w and logical register inputs.
         muxes.emplace_back("Reg" + mux_num + "Mux" , n, width, logical_regs);
+        (muxes.end()-1)->type = Mux::RU;
         
     }
     
@@ -250,23 +252,27 @@ vector<VHDLReg> generateVHDLRegs(vec_mat& clickset, int width, vector<Reg>& E){
     return phys_regs;
 }
 
-void bindVHDLRegMux(vector<Mux<VHDLReg>>& REGMuxes, vector<VHDLReg>& phys_reg){
+void bindVHDLRegMux(vector<Mux>& REGMuxes, vector<VHDLReg>& phys_reg){
     for(int r = 0; r < REGMuxes.size(); r++){
         phys_reg[r].input_mux = &REGMuxes[r];
-        REGMuxes[r].phys = &(phys_reg[r]);
+//        REGMuxes[r].phys = &(phys_reg[r]);
     }
 }
 
-void linkLogicalOut(vector<VHDLFU>& FUs, vector<Mux<VHDLReg>>& RegMuxes){
+template void linkLogicalOut<VHDLFU>(vector<VHDLFU>&, vector<Mux>&);
+template void linkLogicalOut<VHDLReg>(vector<VHDLReg>&, vector<Mux>&);
+
+template <typename VHDLU>
+void linkLogicalOut(vector<VHDLU>& Us, vector<Mux>& Muxes){
     // Link FU outputs to register units based on logical outputs/inputs
-    for(auto& FU : FUs){
+    for(auto& U : Us){
         
-        for(auto& log_out : FU.log_out){
+        for(auto& log_out : U.log_out){
             
-            for(auto& mux : RegMuxes){
+            for(auto& mux : Muxes){
                 if(find(mux.log_in.begin(), mux.log_in.end(), log_out) != mux.log_in.end() ){
                     //FU.output_muxes.push_back(mux);
-                    FU.output_muxes.push_back(&mux);
+                    U.output_muxes.push_back(&mux);
                 }
             }
         }

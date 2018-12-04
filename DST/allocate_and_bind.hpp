@@ -27,21 +27,22 @@ template <typename A>
 vec_mat allocateAndBind(vector<A> vertices, int num_vertices);
 
 //MARK: Generate and bind functions
-vector<vector<Mux<VHDLFU>>> generateFUMux(vec_mat& FUsForType, Op::op_type type, int width, int num_inputs = 2);
+vector<vector<Mux>> generateFUMux(vec_mat& FUsForType, Op::op_type type, int width, int num_inputs = 2);
 
 vector<VHDLFU> generateVHDLFUs(vector<Op>& V, vec_mat& FUsForType, Op::op_type type, int width, int num_inputs= 2);
 
-vector<Mux<VHDLReg>> generateREGMux(vec_mat&, int, vector<Reg>&);
+vector<Mux> generateREGMux(vec_mat&, int, vector<Reg>&);
 
 vector<VHDLReg> generateVHDLRegs(vec_mat& clickset, int width, vector<Reg>& E);
 
-void bindVHDLFUMux(vector<Mux<VHDLFU>>& FUMuxes, vector<VHDLFU>& FUs);
+void bindVHDLFUMux(vector<Mux>& FUMuxes, vector<VHDLFU>& FUs);
 
-void bindVHDLRegMux(vector<Mux<VHDLReg>>& REGMuxes, vector<VHDLReg>& phys_reg);
+void bindVHDLRegMux(vector<Mux>& REGMuxes, vector<VHDLReg>& phys_reg);
 
-void linkLogicalOut(vector<VHDLFU>&, vector<Mux<VHDLReg>>&);
+template <typename VHDLU>
+void linkLogicalOut(vector<VHDLU>&, vector<Mux>&);
 
-vector<Mux<VHDLFU>> byTypeToList(vector<vector<vector<Mux<VHDLFU>>>> FUMuxesByType);
+vector<Mux> byTypeToList(vector<vector<vector<Mux>>> FUMuxesByType);
 
 vector<VHDLFU> byTypeToList(vector<vector<VHDLFU>> FUsByType);
 #endif /* allocate_and_bind_hpp */

@@ -212,6 +212,8 @@ ostream& operator<<(ostream& os, const VHDLReg& reg){
     << "Input mux: " << reg.input_mux->name << endl
     << "Logical outputs: ";
     for(const auto& out : reg.boundRegs){os << out->name << " ";}
+    os << endl << "Output Muxes: ";
+    for(const auto& mux : reg.output_muxes){os << mux->name << " ";}
     return os;
 }
 
@@ -240,12 +242,8 @@ X* getXByName(vector<X>& x, string& s){
 }
 
 
-template void printMuxes<VHDLFU>(vector<Mux<VHDLFU>> muxes);
 
-template void printMuxes<VHDLReg>(vector<Mux<VHDLReg>> muxes);
-
-template <class M>
-void printMuxes(vector<Mux<M>> muxes){
+void printMuxes(vector<Mux> muxes){
     
     cout << "\n\t\tMuxes\n";
     
@@ -254,7 +252,6 @@ void printMuxes(vector<Mux<M>> muxes){
         for(int j = 0; j < muxes[i].num_inputs; j++){
             cout << (muxes[i].log_in[j])->name << " ";
         }
-        cout << "Points to: " << muxes[i].phys->name;
         cout << endl;
     }
 }
